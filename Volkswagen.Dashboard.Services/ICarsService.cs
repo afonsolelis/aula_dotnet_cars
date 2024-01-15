@@ -1,9 +1,11 @@
-﻿namespace Volkswagen.Dashboard.Services
+﻿using Volkswagen.Dashboard.Repository;
+
+namespace Volkswagen.Dashboard.Services
 {
     public interface ICarsService
     {
         int CreateCar(CarModel carModel);
         CarModel GetCarById(int id);
-        List<CarModel> GetCars();
+        Task<IEnumerable<CarModel>> GetCars();
     }
 }

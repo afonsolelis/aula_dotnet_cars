@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using Volkswagen.Dashboard.Repository;
 
 namespace Volkswagen.Dashboard.Services
 {
     public class CarService : ICarsService
     {
-        private static readonly List<CarModel> _listCars = new List<CarModel>()
-            {
-                new CarModel() { Id = 1, Name = "Gol", DateRelease = DateTime.Now },
-                new CarModel() { Id = 2, Name = "Saveiro", DateRelease = DateTime.Now },
-                new CarModel() { Id = 3, Name = "Golf", DateRelease = DateTime.Now },
-                new CarModel() { Id = 4, Name = "Santana", DateRelease = DateTime.Now },
-                new CarModel() { Id = 5, Name = "Polo", DateRelease = DateTime.Now }
-            };
+        private readonly ICarsRepository _carsRepository;
+
+        public CarService(ICarsRepository carsRepository)
+        {
+            _carsRepository = carsRepository;
+        }
+
 
         public int CreateCar(CarModel carModel)
         {
-            _listCars.Add(carModel);
+            
             return carModel.Id;
         }
 
-        public CarModel GetCarById(int id) => GetCars().FirstOrDefault(car => car.Id == id);
+        public CarModel GetCarById(int id) => null;
 
-        public List<CarModel> GetCars() => _listCars;
+        public async Task<IEnumerable<CarModel>> GetCars() => await _carsRepository.getAll();
     }
 }

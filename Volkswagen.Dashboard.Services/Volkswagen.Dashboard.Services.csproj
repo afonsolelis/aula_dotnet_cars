@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Volkswagen.Dashboard.Repository\Volkswagen.Dashboard.Repository.csproj" />
+  </ItemGroup>
+
 </Project>

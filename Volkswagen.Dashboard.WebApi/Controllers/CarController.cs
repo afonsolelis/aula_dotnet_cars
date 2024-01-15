@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Any;
+using Volkswagen.Dashboard.Repository;
 using Volkswagen.Dashboard.Services;
 
 namespace Volkswagen.Dashboard.WebApi.Controllers
@@ -17,9 +18,9 @@ namespace Volkswagen.Dashboard.WebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetCar()
+        public async Task<IActionResult> GetCar()
         {
-            return Ok(_carsService.GetCars());
+            return Ok(await _carsService.GetCars());
         }
 
         [HttpGet("{id}")]
