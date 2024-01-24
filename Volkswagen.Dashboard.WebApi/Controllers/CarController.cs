@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Any;
 using Volkswagen.Dashboard.Repository;
@@ -18,6 +19,7 @@ namespace Volkswagen.Dashboard.WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetCars()
         {
             return Ok(await _carsService.GetCars());
