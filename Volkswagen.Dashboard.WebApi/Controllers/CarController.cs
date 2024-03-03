@@ -19,7 +19,7 @@ namespace Volkswagen.Dashboard.WebApi.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> GetCars()
         {
             return Ok(await _carsService.GetCars());
