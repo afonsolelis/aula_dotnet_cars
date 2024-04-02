@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Volkswagen.Dashboard.Repository;
@@ -25,20 +26,25 @@ builder.Services.AddScoped<ICarsService, CarsService>();
 builder.Services.AddScoped<ICarsRepository>(_ => new CarsRepository(configuration["DB_CONFIG"]));
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository>(_ => new UserRepository(configuration["DB_CONFIG"]));
+
+IdentityModelEventSource.ShowPII = true;
+
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(x =>
+}).AddJwtBearer(options =>
 {
-    x.RequireHttpsMetadata = false;
-    x.SaveToken = true;
-    x.TokenValidationParameters = new TokenValidationParameters
+    options.Authority = "https://dev-k6lyhltkodwyu0y4.us.auth0.com/";
+    options.Audience = "dotne_cars";
+    options.TokenValidationParameters = new TokenValidationParameters
     {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false,
-        ValidateAudience = false
+        ValidIssuer = "https://dev-k6lyhltkodwyu0y4.us.auth0.com/",
+        ValidAudience = "dotne_cars"
     };
 });
 

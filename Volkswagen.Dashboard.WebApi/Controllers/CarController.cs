@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Any;
 using Volkswagen.Dashboard.Repository;
 using Volkswagen.Dashboard.Services.Cars;
+using Volkswagen.Dashboard.WebApi.Validators;
 
 namespace Volkswagen.Dashboard.WebApi.Controllers
 {
@@ -19,9 +20,11 @@ namespace Volkswagen.Dashboard.WebApi.Controllers
         }
 
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetCars()
         {
+            string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            TokenValidator.GetPermissionFromToken(token);
             return Ok(await _carsService.GetCars());
         }
 
@@ -31,7 +34,7 @@ namespace Volkswagen.Dashboard.WebApi.Controllers
             var car = await _carsService.GetCarById(id);
             if(car is null)
                 return NotFound("Carro não encontrado!");
-
+                
             return Ok(car);
         }
 

@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Volkswagen.Dashboard.WebApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fb1d23a91a314cfe1784a9dee2a3088e2cb67783")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3bfc7e699943136399d40af9da8817eabdc38eab")]
 [assembly: System.Reflection.AssemblyProductAttribute("Volkswagen.Dashboard.WebApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Volkswagen.Dashboard.WebApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
