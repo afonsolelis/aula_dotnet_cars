@@ -73,7 +73,7 @@ jobs:
 
   deploy:
     name: Deploy
-#    needs: quality_code
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to production
