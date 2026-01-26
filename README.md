@@ -1,8 +1,27 @@
-# Volkswagen Dashboard WebAPI
+# Volkswagen Dashboard
 
-API REST para gerenciamento de carros da Volkswagen, desenvolvida em **.NET 9.0** com arquitetura em camadas, autenticação JWT e PostgreSQL.
+Sistema completo de gerenciamento de carros da Volkswagen, desenvolvido em **.NET 9.0** com arquitetura em camadas, autenticação JWT, PostgreSQL e frontend Blazor SSR.
 
 > Projeto de exemplo para acompanhamento de aulas.
+
+---
+
+## Quick Start
+
+```bash
+# 1. Subir o banco de dados
+docker compose up -d
+
+# 2. Rodar a API
+cd Volkswagen.Dashboard.WebApi && dotnet run
+
+# 3. Rodar o Frontend (em outro terminal)
+cd Volkswagen.Dashboard.Web && dotnet run --urls "http://localhost:5100"
+```
+
+**Credenciais de teste:**
+- Email: `admin@vw.com`
+- Senha: `admin123`
 
 ---
 
@@ -11,231 +30,252 @@ API REST para gerenciamento de carros da Volkswagen, desenvolvida em **.NET 9.0*
 ```
 Volkswagen.Dashboard.WebApi.sln
 │
-├── Volkswagen.Dashboard.WebApi/       # Camada de Apresentação (API)
-│   ├── Controllers/                   # Endpoints REST
-│   ├── Validators/                    # Validação de tokens
-│   ├── Program.cs                     # Configuração da aplicação
-│   └── appsettings.json              # Configurações
-│
-├── Volkswagen.Dashboard.Services/     # Camada de Negócio
-│   ├── Auth/                          # Serviços de autenticação
-│   └── Cars/                          # Serviços de carros
-│
+├── Volkswagen.Dashboard.WebApi/       # API REST
+├── Volkswagen.Dashboard.Web/          # Frontend Blazor SSR
+├── Volkswagen.Dashboard.Services/     # Camada de Negocio
 ├── Volkswagen.Dashboard.Repository/   # Camada de Dados
-│   ├── CarsRepository.cs              # Acesso a dados de carros
-│   └── UserRepository.cs              # Acesso a dados de usuários
+├── Volkswagen.Dashboard.Tests/        # Testes Unitarios
 │
-└── Volkswagen.Dashboard.Tests/        # Testes Unitários
-    └── TestOne.cs                     # Testes com NUnit + Moq
+├── scripts/
+│   └── init.sql                       # Script de inicializacao do banco
+│
+└── docker-compose.yml                 # PostgreSQL local
 ```
 
 ---
 
-## Arquitetura em Camadas
+## Arquitetura
 
 ```
 ┌─────────────────────────────────────┐
-│          Controllers (API)          │  ← Recebe requisições HTTP
+│      Blazor Web App (Frontend)      │  ← Interface do usuario
 ├─────────────────────────────────────┤
-│          Services (Negócio)         │  ← Regras de negócio
+│          Controllers (API)          │  ← Endpoints REST
 ├─────────────────────────────────────┤
-│        Repository (Dados)           │  ← Acesso ao banco de dados
+│          Services (Negocio)         │  ← Regras de negocio
 ├─────────────────────────────────────┤
-│       PostgreSQL (Banco)            │  ← Persistência
+│        Repository (Dados)           │  ← Acesso ao banco
+├─────────────────────────────────────┤
+│       PostgreSQL (Docker)           │  ← Persistencia
 └─────────────────────────────────────┘
 ```
 
-### Princípios Aplicados
-- **Separação de responsabilidades** - Cada camada tem uma função específica
-- **Injeção de dependência** - Configurada no `Program.cs`
-- **Interfaces** - Contratos entre camadas (ICarsService, ICarsRepository)
-
 ---
 
-## Tecnologias Utilizadas
+## Tecnologias
 
-| Tecnologia | Versão | Finalidade |
+| Tecnologia | Versao | Finalidade |
 |------------|--------|------------|
-| .NET | 9.0 | Framework principal |
+| .NET | 9.0 | Framework |
 | ASP.NET Core | 9.0 | Web API REST |
-| PostgreSQL | - | Banco de dados |
+| Blazor Web App | 9.0 | Frontend SSR |
+| PostgreSQL | 16 | Banco de dados |
+| Docker Compose | - | Orquestracao |
 | Dapper | 2.1.28 | Micro-ORM |
 | Npgsql | 9.0.3 | Driver PostgreSQL |
-| JWT Bearer | 9.0.0 | Autenticação |
-| Swagger | 6.5.0 | Documentação da API |
-| NUnit | 3.13.3 | Framework de testes |
-| Moq | 4.20.70 | Mocking para testes |
-
----
-
-## Endpoints da API
-
-### Autenticação (`/api/user`)
-
-| Método | Rota | Descrição | Autenticação |
-|--------|------|-----------|--------------|
-| POST | `/api/user/register` | Registrar novo usuário | Não |
-| POST | `/api/user/login` | Login (retorna JWT) | Não |
-
-**Exemplo - Registro:**
-```json
-POST /api/user/register
-{
-  "username": "joao",
-  "email": "joao@email.com",
-  "password": "senha123"
-}
-```
-
-**Exemplo - Login:**
-```json
-POST /api/user/login
-{
-  "email": "joao@email.com",
-  "password": "senha123"
-}
-
-// Resposta:
-{
-  "createdAt": "2024-01-01T10:00:00",
-  "expiresAt": "2024-01-01T12:00:00",
-  "accessToken": "eyJhbGciOiJIUzI1NiIs..."
-}
-```
-
-### Carros (`/api/car`)
-
-| Método | Rota | Descrição | Autenticação |
-|--------|------|-----------|--------------|
-| GET | `/api/car` | Listar todos os carros | JWT |
-| GET | `/api/car/{id}` | Buscar carro por ID | Não |
-| POST | `/api/car` | Criar novo carro | Não |
-| PUT | `/api/car/{id}` | Atualizar carro | Não |
-| DELETE | `/api/car` | Deletar carro | Não |
-
-**Exemplo - Criar Carro:**
-```json
-POST /api/car
-{
-  "name": "Polo",
-  "dateRelease": "2024-01-15"
-}
-```
-
-**Exemplo - Requisição Autenticada:**
-```bash
-GET /api/car
-Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
-```
-
----
-
-## Como Executar
-
-### Pré-requisitos
-- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
-- (Opcional) [Docker](https://www.docker.com/)
-
-### Execução Local
-
-```bash
-# 1. Clone o repositório
-git clone <url-do-repositorio>
-cd aula_dotnet_cars
-
-# 2. Restaure as dependências
-dotnet restore
-
-# 3. Execute a aplicação
-cd Volkswagen.Dashboard.WebApi
-dotnet run
-
-# A API estará disponível em:
-# - HTTP:  http://localhost:5266
-# - HTTPS: https://localhost:7037
-```
-
-### Execução com Docker
-
-```bash
-# Build da imagem
-docker build -t volkswagen-api -f Volkswagen.Dashboard.WebApi/Dockerfile .
-
-# Executar container
-docker run -p 8080:8080 -p 8081:8081 volkswagen-api
-```
-
-### Acessar Documentação Swagger
-
-Após iniciar a aplicação, acesse:
-```
-http://localhost:5266/swagger
-```
-
----
-
-## Executar Testes
-
-```bash
-# Executar todos os testes
-dotnet test
-
-# Executar com detalhes
-dotnet test --verbosity normal
-
-# Executar com cobertura de código
-dotnet test --collect:"XPlat Code Coverage"
-```
-
-### Testes Implementados
-- `Should_GetCarsWithSuccess` - Testa listagem de carros
-- `Should_GetCarByIdWithSuccess` - Testa busca por ID
-
----
-
-## Modelos de Dados
-
-### CarModel
-```csharp
-public class CarModel
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public DateTime DateRelease { get; set; }
-}
-```
-
-### UserModel
-```csharp
-public class UserModel
-{
-    public string Username { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
-}
-```
+| JWT Bearer | 9.0.0 | Autenticacao |
+| Swagger | 6.5.0 | Documentacao API |
 
 ---
 
 ## Banco de Dados
 
+### Subir com Docker Compose
+
+```bash
+# Subir o banco
+docker compose up -d
+
+# Verificar se esta rodando
+docker compose ps
+
+# Ver logs
+docker compose logs -f postgres
+
+# Parar o banco
+docker compose down
+
+# Parar e remover dados
+docker compose down -v
+```
+
+### Credenciais do Banco
+
+| Parametro | Valor |
+|-----------|-------|
+| Host | localhost |
+| Porta | 5432 |
+| Database | volksdb |
+| Usuario | volksdata |
+| Senha | volksdata123 |
+
 ### Tabelas
 
 **volksdatatable** (Carros)
-| Coluna | Tipo | Descrição |
+| Coluna | Tipo | Descricao |
 |--------|------|-----------|
-| id | SERIAL | Chave primária |
+| id | SERIAL | Chave primaria |
 | carname | VARCHAR | Nome do carro |
-| car_date_release | DATE | Data de lançamento |
+| car_date_release | DATE | Data de lancamento |
 
-**users** (Usuários)
-| Coluna | Tipo | Descrição |
+**users** (Usuarios)
+| Coluna | Tipo | Descricao |
 |--------|------|-----------|
-| id | SERIAL | Chave primária |
-| username | VARCHAR | Nome do usuário |
-| email | VARCHAR | Email (único) |
+| id | SERIAL | Chave primaria |
+| username | VARCHAR | Nome do usuario |
+| email | VARCHAR | Email (unico) |
 | password | VARCHAR | Senha (hash MD5) |
-| created_at | TIMESTAMP | Data de criação |
+| created_at | TIMESTAMP | Data de criacao |
+
+**email_whitelist** (Emails autorizados)
+| Coluna | Tipo | Descricao |
+|--------|------|-----------|
+| id | SERIAL | Chave primaria |
+| email | VARCHAR | Email autorizado |
+| created_at | TIMESTAMP | Data de criacao |
+
+### Dados de Teste
+
+O script `scripts/init.sql` cria automaticamente:
+
+**Carros:**
+- Gol, Polo, Golf, Jetta, Tiguan, T-Cross, Nivus, Amarok, Virtus, Saveiro
+
+**Usuario padrao:**
+- Email: `admin@vw.com`
+- Senha: `admin123`
+
+**Whitelist de emails (autorizados para registro):**
+- admin@vw.com
+- teste@vw.com
+- aluno@inteli.edu.br
+- professor@inteli.edu.br
+- dev@volkswagen.com.br
+
+> Apenas emails na whitelist podem se registrar no sistema.
+
+---
+
+## API REST
+
+### URLs
+
+| Servico | URL |
+|---------|-----|
+| API | http://localhost:5266 |
+| Swagger | http://localhost:5266/swagger |
+| Frontend | http://localhost:5100 |
+
+### Endpoints
+
+**Autenticacao (`/api/user`)**
+| Metodo | Rota | Descricao |
+|--------|------|-----------|
+| POST | `/api/user/register` | Registrar (requer email na whitelist) |
+| POST | `/api/user/login` | Login (retorna JWT) |
+
+**Carros (`/api/car`)**
+| Metodo | Rota | Descricao | Auth |
+|--------|------|-----------|------|
+| GET | `/api/car` | Listar carros | JWT |
+| GET | `/api/car/{id}` | Buscar por ID | - |
+| POST | `/api/car` | Criar carro | - |
+| PUT | `/api/car/{id}` | Atualizar | - |
+| DELETE | `/api/car` | Deletar | - |
+
+### Exemplos
+
+**Login:**
+```bash
+curl -X POST http://localhost:5266/api/user/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@vw.com","password":"admin123"}'
+```
+
+**Listar carros (autenticado):**
+```bash
+curl http://localhost:5266/api/car \
+  -H "Authorization: Bearer <seu-token>"
+```
+
+---
+
+## Frontend Blazor
+
+O frontend usa Blazor Web App com Server-Side Rendering (SSR).
+
+### Paginas
+
+| Rota | Descricao |
+|------|-----------|
+| `/` | Home |
+| `/login` | Pagina de login |
+| `/cars` | Lista de carros (requer login) |
+
+### Executar
+
+```bash
+cd Volkswagen.Dashboard.Web
+dotnet run --urls "http://localhost:5100"
+```
+
+---
+
+## Desenvolvimento
+
+### Pre-requisitos
+
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [Docker](https://www.docker.com/)
+
+### Instalar .NET 9.0 (Linux)
+
+```bash
+# Baixar script de instalacao
+wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+chmod +x dotnet-install.sh
+
+# Instalar SDK 9.0
+./dotnet-install.sh --channel 9.0
+
+# Adicionar ao PATH (~/.bashrc ou ~/.zshrc)
+export DOTNET_ROOT=$HOME/.dotnet
+export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
+```
+
+### Comandos Uteis
+
+```bash
+# Restaurar dependencias
+dotnet restore
+
+# Compilar
+dotnet build
+
+# Executar testes
+dotnet test
+
+# Limpar e rebuildar
+dotnet clean && dotnet build
+
+# Adicionar pacote NuGet
+dotnet add package NomePacote
+```
+
+---
+
+## Testes
+
+```bash
+# Executar todos os testes
+dotnet test
+
+# Com detalhes
+dotnet test --verbosity normal
+
+# Com cobertura
+dotnet test --collect:"XPlat Code Coverage"
+```
 
 ---
 
@@ -243,80 +283,73 @@ public class UserModel
 
 ```
 .
+├── docker-compose.yml                 # PostgreSQL
+├── scripts/
+│   └── init.sql                       # DDL + dados de teste
+│
 ├── Volkswagen.Dashboard.WebApi/
 │   ├── Controllers/
-│   │   ├── CarController.cs           # CRUD de carros
-│   │   └── UserController.cs          # Autenticação
+│   │   ├── CarController.cs
+│   │   └── UserController.cs
 │   ├── Validators/
-│   │   └── TokenValidator.cs          # Validação JWT
-│   ├── Program.cs                     # Startup + DI + Auth
-│   ├── appsettings.json              # Connection string
-│   └── Dockerfile                     # Container config
+│   │   └── TokenValidator.cs
+│   ├── Program.cs
+│   ├── appsettings.json
+│   └── Dockerfile
+│
+├── Volkswagen.Dashboard.Web/          # Blazor Frontend
+│   ├── Components/
+│   │   ├── Layout/
+│   │   │   └── NavMenu.razor
+│   │   └── Pages/
+│   │       ├── Home.razor
+│   │       ├── Login.razor
+│   │       └── Cars.razor
+│   ├── Models/
+│   ├── Services/
+│   │   ├── ICarService.cs
+│   │   ├── CarService.cs
+│   │   ├── IAuthService.cs
+│   │   └── AuthService.cs
+│   └── Program.cs
 │
 ├── Volkswagen.Dashboard.Services/
 │   ├── Auth/
-│   │   ├── IAuthService.cs            # Interface
-│   │   └── AuthService.cs             # Implementação
-│   ├── Cars/
-│   │   ├── ICarsService.cs            # Interface
-│   │   └── CarsService.cs             # Implementação
-│   └── Models/
-│       ├── CarModel.cs
-│       ├── UserModel.cs
-│       ├── LoginRequest.cs
-│       ├── LoginResponse.cs
-│       └── RegisterRequest.cs
+│   │   ├── IAuthService.cs
+│   │   └── AuthService.cs
+│   └── Cars/
+│       ├── ICarsService.cs
+│       └── CarsService.cs
 │
 ├── Volkswagen.Dashboard.Repository/
-│   ├── ICarsRepository.cs             # Interface
-│   ├── CarsRepository.cs              # Implementação
-│   ├── IUserRepository.cs             # Interface
-│   └── UserRepository.cs              # Implementação
+│   ├── ICarsRepository.cs
+│   ├── CarsRepository.cs
+│   ├── IUserRepository.cs
+│   └── UserRepository.cs
 │
 └── Volkswagen.Dashboard.Tests/
-    └── TestOne.cs                     # Testes unitários
+    └── TestOne.cs
 ```
 
 ---
 
-## Conceitos Abordados nas Aulas
+## Conceitos Abordados
 
-- [x] Arquitetura em camadas (Layered Architecture)
-- [x] Injeção de Dependência (DI)
-- [x] Padrão Repository
+- [x] Arquitetura em camadas
+- [x] Injecao de Dependencia (DI)
+- [x] Padrao Repository
 - [x] RESTful API
-- [x] Autenticação JWT
-- [x] Integração com PostgreSQL
+- [x] Autenticacao JWT
+- [x] PostgreSQL com Docker
 - [x] Micro-ORM (Dapper)
-- [x] Testes unitários com Mocking
-- [x] Containerização com Docker
+- [x] Blazor Web App (SSR)
+- [x] Testes unitarios com Mocking
+- [x] Docker Compose
 - [ ] CI/CD (GitLab CI)
-- [x] Documentação com Swagger/OpenAPI
+- [x] Swagger/OpenAPI
 
 ---
 
-## Comandos Úteis
-
-```bash
-# Criar nova migration (se usar EF Core)
-dotnet ef migrations add NomeMigration
-
-# Criar novo projeto na solution
-dotnet new classlib -n NomeProjeto
-dotnet sln add NomeProjeto/NomeProjeto.csproj
-
-# Adicionar referência entre projetos
-dotnet add reference ../OutroProjeto/OutroProjeto.csproj
-
-# Adicionar pacote NuGet
-dotnet add package NomePacote
-
-# Limpar e rebuildar
-dotnet clean && dotnet build
-```
-
----
-
-## Licença
+## Licenca
 
 Projeto desenvolvido para fins educacionais.

@@ -1,0 +1,100 @@
+@page "/login"
+@using Volkswagen.Dashboard.Web.Models
+@using Volkswagen.Dashboard.Web.Services
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>Login</PageTitle>
+
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <h3 class="text-center mb-4">Login</h3>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
+
+        @if (!string.IsNullOrEmpty(token))
+        {
+            <div class="alert alert-success">
+                <strong>Login realizado!</strong>
+                <div class="mt-2">
+                    <a href="/dashboard?token=@Uri.EscapeDataString(token)" class="btn btn-primary btn-sm me-2">Dashboard</a>
+                    <a href="/cars?token=@Uri.EscapeDataString(token)" class="btn btn-success btn-sm">Ver Carros</a>
+                </div>
+            </div>
+        }
+
+        <EditForm Model="loginRequest" OnValidSubmit="HandleLogin" FormName="LoginForm">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <InputText @bind-Value="loginRequest.Email" class="form-control" placeholder="seu@email.com" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Senha</label>
+                <InputText @bind-Value="loginRequest.Password" type="password" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                Entrar
+            </button>
+        </EditForm>
+
+        <div class="text-center mt-3">
+            <span>Nao tem conta? </span>
+            <a href="/register">Cadastre-se</a>
+        </div>
+
+        <div class="mt-4 p-3 bg-light rounded">
+            <small class="text-muted">
+                <strong>Credenciais de teste:</strong><br />
+                Email: admin@vw.com<br />
+                Senha: admin123
+            </small>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginRequest loginRequest = new();
+    private string? errorMessage;
+    private string? token;
+    private bool isLoading;
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            var response = await AuthService.LoginAsync(loginRequest);
+
+            if (response != null)
+            {
+                token = response.AccessToken;
+                // Redireciona automaticamente para o dashboard
+                Navigation.NavigateTo($"/dashboard?token={Uri.EscapeDataString(token)}", forceLoad: true);
+            }
+            else
+            {
+                errorMessage = "Email ou senha incorretos";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao conectar: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

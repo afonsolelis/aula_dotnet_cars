@@ -64,9 +64,13 @@ namespace Volkswagen.Dashboard.Services.Auth
                 var isFaildedRequest = string.IsNullOrEmpty(request.Email) ||
                                        string.IsNullOrEmpty(request.Password) ||
                                        string.IsNullOrEmpty(request.Username);
-                
+
                 if (isFaildedRequest)
                     throw new ArgumentException("Dados obrigatórios não informados");
+
+                // Verifica se o email esta na whitelist
+                if (!await _userRepository.IsEmailInWhitelist(request.Email))
+                    throw new ArgumentException("Email não autorizado para registro");
 
                 if (await _userRepository.ExistWithEmail(request.Email))
                     throw new ArgumentException("Usuário já cadastrado na base");

@@ -1,0 +1,144 @@
+@page "/register"
+@using Volkswagen.Dashboard.Web.Services
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>Cadastro</PageTitle>
+
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <h3 class="text-center mb-4">Cadastro</h3>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
+
+        @if (success)
+        {
+            <div class="alert alert-success">
+                <strong>Cadastro realizado!</strong>
+                <p>Agora voce pode fazer login.</p>
+                <a href="/login" class="btn btn-success">Ir para Login</a>
+            </div>
+        }
+        else
+        {
+            <EditForm Model="registerModel" OnValidSubmit="HandleRegister" FormName="RegisterForm">
+                <div class="mb-3">
+                    <label class="form-label">Nome</label>
+                    <InputText @bind-Value="registerModel.Username" class="form-control" placeholder="Seu nome" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <InputText @bind-Value="registerModel.Email" class="form-control" placeholder="seu@email.com" />
+                    <small class="text-muted">Apenas emails autorizados podem se cadastrar</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Senha</label>
+                    <InputText @bind-Value="registerModel.Password" type="password" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Confirmar Senha</label>
+                    <InputText @bind-Value="registerModel.ConfirmPassword" type="password" class="form-control" />
+                    @if (!string.IsNullOrEmpty(registerModel.Password) &&
+                         !string.IsNullOrEmpty(registerModel.ConfirmPassword) &&
+                         registerModel.Password != registerModel.ConfirmPassword)
+                    {
+                        <small class="text-danger">As senhas nao conferem</small>
+                    }
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" disabled="@(isLoading || !IsFormValid())">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                    }
+                    Cadastrar
+                </button>
+            </EditForm>
+
+            <div class="text-center mt-3">
+                <span>Ja tem conta? </span>
+                <a href="/login">Fazer login</a>
+            </div>
+
+            <div class="mt-4 p-3 bg-light rounded">
+                <small class="text-muted">
+                    <strong>Emails autorizados (whitelist):</strong><br />
+                    - admin@vw.com<br />
+                    - teste@vw.com<br />
+                    - aluno@inteli.edu.br<br />
+                    - professor@inteli.edu.br<br />
+                    - dev@volkswagen.com.br
+                </small>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private RegisterModel registerModel = new();
+    private string? errorMessage;
+    private bool isLoading;
+    private bool success;
+
+    private bool IsFormValid()
+    {
+        return !string.IsNullOrEmpty(registerModel.Username) &&
+               !string.IsNullOrEmpty(registerModel.Email) &&
+               !string.IsNullOrEmpty(registerModel.Password) &&
+               !string.IsNullOrEmpty(registerModel.ConfirmPassword) &&
+               registerModel.Password == registerModel.ConfirmPassword;
+    }
+
+    private async Task HandleRegister()
+    {
+        if (registerModel.Password != registerModel.ConfirmPassword)
+        {
+            errorMessage = "As senhas nao conferem";
+            return;
+        }
+
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            var result = await AuthService.RegisterAsync(
+                registerModel.Username,
+                registerModel.Email,
+                registerModel.Password
+            );
+
+            if (result)
+            {
+                success = true;
+            }
+            else
+            {
+                errorMessage = "Erro ao cadastrar. Verifique se o email esta na whitelist.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private class RegisterModel
+    {
+        public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+}

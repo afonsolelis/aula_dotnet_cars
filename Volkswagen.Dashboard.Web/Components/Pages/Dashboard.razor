@@ -1,0 +1,344 @@
+@page "/dashboard"
+@using Volkswagen.Dashboard.Web.Models
+@using Volkswagen.Dashboard.Web.Services
+@using ApexCharts
+@using Microsoft.AspNetCore.WebUtilities
+@inject ICarService CarService
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>Dashboard</PageTitle>
+
+<h3 class="mb-4">Dashboard - Carros Volkswagen</h3>
+
+@if (!isAuthenticated)
+{
+    <div class="alert alert-warning">
+        <p><strong>Acesso restrito.</strong> Faca login para ver o dashboard.</p>
+        <a href="/login" class="btn btn-primary">Ir para Login</a>
+    </div>
+}
+else if (isLoading)
+{
+    <div class="d-flex justify-content-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Filtros</h5>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Decada Inicial</label>
+                    <select class="form-select" @bind="filtroDecadaInicial" @bind:after="AplicarFiltros">
+                        <option value="1970">1970</option>
+                        <option value="1980">1980</option>
+                        <option value="1990">1990</option>
+                        <option value="2000">2000</option>
+                        <option value="2010">2010</option>
+                        <option value="2020">2020</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Decada Final</label>
+                    <select class="form-select" @bind="filtroDecadaFinal" @bind:after="AplicarFiltros">
+                        <option value="1970">1970</option>
+                        <option value="1980">1980</option>
+                        <option value="1990">1990</option>
+                        <option value="2000">2000</option>
+                        <option value="2010">2010</option>
+                        <option value="2020">2020</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Ordenar por</label>
+                    <select class="form-select" @bind="ordenacao" @bind:after="AplicarFiltros">
+                        <option value="nome">Nome</option>
+                        <option value="data">Data Lancamento</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-outline-secondary w-100" @onclick="LimparFiltros">
+                        Limpar Filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards de resumo -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total de Carros</h5>
+                    <h2>@carrosFiltrados.Count</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Mais Antigo</h5>
+                    <h6>@(carrosFiltrados.Any() ? carrosFiltrados.OrderBy(c => c.DateRelease).First().Name : "-")</h6>
+                    <small>@(carrosFiltrados.Any() ? carrosFiltrados.OrderBy(c => c.DateRelease).First().DateRelease.Year.ToString() : "")</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Mais Recente</h5>
+                    <h6>@(carrosFiltrados.Any() ? carrosFiltrados.OrderByDescending(c => c.DateRelease).First().Name : "-")</h6>
+                    <small>@(carrosFiltrados.Any() ? carrosFiltrados.OrderByDescending(c => c.DateRelease).First().DateRelease.Year.ToString() : "")</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <h5 class="card-title">Decadas</h5>
+                    <h2>@dadosPorDecada.Count</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graficos -->
+    <div class="row">
+        <!-- Grafico de Barras -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Carros por Decada</h5>
+                </div>
+                <div class="card-body">
+                    @if (dadosPorDecada.Any())
+                    {
+                        <ApexChart TItem="DadoDecada"
+                                   Title="">
+                            <ApexPointSeries TItem="DadoDecada"
+                                             Items="dadosPorDecada"
+                                             Name="Quantidade"
+                                             SeriesType="SeriesType.Bar"
+                                             XValue="e => e.Decada"
+                                             YValue="e => e.Quantidade" />
+                        </ApexChart>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Grafico de Pizza -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Distribuicao por Periodo</h5>
+                </div>
+                <div class="card-body">
+                    @if (dadosPorPeriodo.Any())
+                    {
+                        <ApexChart TItem="DadoPeriodo"
+                                   Title="">
+                            <ApexPointSeries TItem="DadoPeriodo"
+                                             Items="dadosPorPeriodo"
+                                             Name="Carros"
+                                             SeriesType="SeriesType.Donut"
+                                             XValue="e => e.Periodo"
+                                             YValue="e => e.Quantidade"
+                                             ShowDataLabels />
+                        </ApexChart>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Grafico de Linha (Timeline) -->
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Timeline de Lancamentos</h5>
+                </div>
+                <div class="card-body">
+                    @if (dadosTimeline.Any())
+                    {
+                        <ApexChart TItem="DadoTimeline"
+                                   Title="">
+                            <ApexPointSeries TItem="DadoTimeline"
+                                             Items="dadosTimeline"
+                                             Name="Lancamentos"
+                                             SeriesType="SeriesType.Area"
+                                             XValue="e => e.Ano"
+                                             YValue="e => e.Acumulado" />
+                        </ApexChart>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de dados -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Dados Filtrados (@carrosFiltrados.Count carros)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Ano</th>
+                            <th>Decada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var car in carrosFiltrados)
+                        {
+                            <tr>
+                                <td>@car.Id</td>
+                                <td><strong>@car.Name</strong></td>
+                                <td>@car.DateRelease.ToString("dd/MM/yyyy")</td>
+                                <td>@((car.DateRelease.Year / 10) * 10)s</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<CarModel> todosCarros = new();
+    private List<CarModel> carrosFiltrados = new();
+    private List<DadoDecada> dadosPorDecada = new();
+    private List<DadoPeriodo> dadosPorPeriodo = new();
+    private List<DadoTimeline> dadosTimeline = new();
+
+    private string? token;
+    private bool isLoading = true;
+    private bool isAuthenticated;
+
+    private int filtroDecadaInicial = 1970;
+    private int filtroDecadaFinal = 2020;
+    private string ordenacao = "nome";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var tokenValue))
+        {
+            token = tokenValue.ToString();
+            isAuthenticated = true;
+            await CarregarDados();
+        }
+        isLoading = false;
+    }
+
+    private async Task CarregarDados()
+    {
+        if (string.IsNullOrEmpty(token)) return;
+
+        try
+        {
+            todosCarros = await CarService.GetCarsAsync(token);
+            AplicarFiltros();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro: {ex.Message}");
+        }
+    }
+
+    private void AplicarFiltros()
+    {
+        // Filtrar por decada
+        carrosFiltrados = todosCarros
+            .Where(c => c.DateRelease.Year >= filtroDecadaInicial &&
+                        c.DateRelease.Year < filtroDecadaFinal + 10)
+            .ToList();
+
+        // Ordenar
+        carrosFiltrados = ordenacao switch
+        {
+            "data" => carrosFiltrados.OrderBy(c => c.DateRelease).ToList(),
+            _ => carrosFiltrados.OrderBy(c => c.Name).ToList()
+        };
+
+        // Atualizar graficos
+        AtualizarGraficos();
+    }
+
+    private void AtualizarGraficos()
+    {
+        // Dados por decada
+        dadosPorDecada = carrosFiltrados
+            .GroupBy(c => (c.DateRelease.Year / 10) * 10)
+            .Select(g => new DadoDecada
+            {
+                Decada = $"{g.Key}s",
+                Quantidade = g.Count()
+            })
+            .OrderBy(d => d.Decada)
+            .ToList();
+
+        // Dados por periodo (antes/depois de 2000)
+        dadosPorPeriodo = new List<DadoPeriodo>
+        {
+            new() { Periodo = "Antes de 1990", Quantidade = carrosFiltrados.Count(c => c.DateRelease.Year < 1990) },
+            new() { Periodo = "1990-1999", Quantidade = carrosFiltrados.Count(c => c.DateRelease.Year >= 1990 && c.DateRelease.Year < 2000) },
+            new() { Periodo = "2000-2009", Quantidade = carrosFiltrados.Count(c => c.DateRelease.Year >= 2000 && c.DateRelease.Year < 2010) },
+            new() { Periodo = "2010+", Quantidade = carrosFiltrados.Count(c => c.DateRelease.Year >= 2010) }
+        }.Where(p => p.Quantidade > 0).ToList();
+
+        // Timeline acumulado
+        var anos = carrosFiltrados
+            .OrderBy(c => c.DateRelease.Year)
+            .Select(c => c.DateRelease.Year)
+            .Distinct()
+            .ToList();
+
+        var acumulado = 0;
+        dadosTimeline = new List<DadoTimeline>();
+        foreach (var ano in anos)
+        {
+            acumulado += carrosFiltrados.Count(c => c.DateRelease.Year == ano);
+            dadosTimeline.Add(new DadoTimeline { Ano = ano.ToString(), Acumulado = acumulado });
+        }
+    }
+
+    private void LimparFiltros()
+    {
+        filtroDecadaInicial = 1970;
+        filtroDecadaFinal = 2020;
+        ordenacao = "nome";
+        AplicarFiltros();
+    }
+
+    // Classes de dados para os graficos
+    private class DadoDecada
+    {
+        public string Decada { get; set; } = "";
+        public decimal Quantidade { get; set; }
+    }
+
+    private class DadoPeriodo
+    {
+        public string Periodo { get; set; } = "";
+        public decimal Quantidade { get; set; }
+    }
+
+    private class DadoTimeline
+    {
+        public string Ano { get; set; } = "";
+        public decimal Acumulado { get; set; }
+    }
+}

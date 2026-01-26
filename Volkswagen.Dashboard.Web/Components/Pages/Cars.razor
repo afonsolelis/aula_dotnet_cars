@@ -1,0 +1,105 @@
+@page "/cars"
+@using Volkswagen.Dashboard.Web.Models
+@using Volkswagen.Dashboard.Web.Services
+@using Microsoft.AspNetCore.WebUtilities
+@inject ICarService CarService
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>Carros</PageTitle>
+
+<h3>Carros Volkswagen</h3>
+
+@if (!isAuthenticated)
+{
+    <div class="alert alert-warning">
+        <p><strong>Acesso restrito.</strong> Faca login para ver os carros.</p>
+        <a href="/login" class="btn btn-primary">Ir para Login</a>
+    </div>
+}
+else
+{
+    <div class="mb-3">
+        <button @onclick="LoadCars" class="btn btn-primary" disabled="@isLoading">
+            @if (isLoading) { <span class="spinner-border spinner-border-sm me-2"></span> }
+            Atualizar
+        </button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    @if (cars.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Data de Lancamento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var car in cars)
+                    {
+                        <tr>
+                            <td>@car.Id</td>
+                            <td><strong>@car.Name</strong></td>
+                            <td>@car.DateRelease.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <p class="text-muted">Total: @cars.Count carros</p>
+    }
+    else if (!isLoading)
+    {
+        <div class="alert alert-info">Nenhum carro encontrado.</div>
+    }
+}
+
+@code {
+    private List<CarModel> cars = new();
+    private string? token;
+    private string? errorMessage;
+    private bool isLoading;
+    private bool isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Pega o token da URL
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var tokenValue))
+        {
+            token = tokenValue.ToString();
+            isAuthenticated = true;
+            await LoadCars();
+        }
+    }
+
+    private async Task LoadCars()
+    {
+        if (string.IsNullOrEmpty(token)) return;
+
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            cars = await CarService.GetCarsAsync(token);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao carregar carros: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

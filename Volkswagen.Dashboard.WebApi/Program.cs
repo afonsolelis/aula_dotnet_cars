@@ -35,16 +35,15 @@ builder.Services.AddAuthentication(x =>
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
-    options.Authority = "https://dev-k6lyhltkodwyu0y4.us.auth0.com/";
-    options.Audience = "dotne_cars";
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
+        ValidateIssuer = false,
+        ValidateAudience = false,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = "https://dev-k6lyhltkodwyu0y4.us.auth0.com/",
-        ValidAudience = "dotne_cars"
+        IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 });
 

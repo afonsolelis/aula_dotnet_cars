@@ -10,6 +10,6 @@ namespace Volkswagen.Dashboard.Repository
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int DateRelease { get; set; }
+        public DateTime DateRelease { get; set; }
     }
 }

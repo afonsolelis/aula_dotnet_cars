@@ -22,10 +22,10 @@ namespace Volkswagen.Dashboard.Tests
             #region Arrange
             var expectedResult = new List<CarModel>()
             {
-                new() { Id = 1, Name = "Fox", DateRelease = 2022 },
-                new() { Id = 2, Name = "Polo", DateRelease = 2022 },
-                new() { Id = 3, Name = "Gol", DateRelease = 2022 },
-                new() { Id = 4, Name = "Passat", DateRelease = 2022 }
+                new() { Id = 1, Name = "Fox", DateRelease = new DateTime(2022, 1, 1) },
+                new() { Id = 2, Name = "Polo", DateRelease = new DateTime(2022, 1, 1) },
+                new() { Id = 3, Name = "Gol", DateRelease = new DateTime(2022, 1, 1) },
+                new() { Id = 4, Name = "Passat", DateRelease = new DateTime(2022, 1, 1) }
             };
 
             _mock.Setup(x => x.GetCars())
@@ -51,7 +51,7 @@ namespace Volkswagen.Dashboard.Tests
         public void Should_GetCarByIdWithSuccess()
         {
             #region Arrange
-            var expectedResult = new CarModel() { Id = 1, Name = "Fox", DateRelease = 2022 };
+            var expectedResult = new CarModel() { Id = 1, Name = "Fox", DateRelease = new DateTime(2022, 1, 1) };
 
             //_mock.Setup(x => x.GetCarById(It.IsAny<int>()))
             //     .ReturnsAsync(expectedResult);

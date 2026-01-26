@@ -44,9 +44,21 @@ namespace Volkswagen.Dashboard.Repository
                 await conn.OpenAsync();
                 var result = await conn.ExecuteAsync(@"
                     INSERT INTO public.users
-                        (id, username, email, ""password"", created_at)
-                    VALUES(nextval('users_id_seq'::regclass), @Username, @Email, @Password, CURRENT_TIMESTAMP);
+                        (username, email, password, created_at)
+                    VALUES(@Username, @Email, @Password, CURRENT_TIMESTAMP);
                 ", new { Username = username, Email = email, Password = password });
+            }
+        }
+
+        public async Task<bool> IsEmailInWhitelist(string email)
+        {
+            using (var conn = new NpgsqlConnection(_dbConfig))
+            {
+                await conn.OpenAsync();
+                var count = await conn.ExecuteScalarAsync<int>(@"
+                    SELECT COUNT(*) FROM email_whitelist WHERE email = @Email
+                ", new { Email = email });
+                return count > 0;
             }
         }
     }
