@@ -1,21 +1,16 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: vw-postgres
-    environment:
-      POSTGRES_USER: volksdata
-      POSTGRES_PASSWORD: volksdata123
-      POSTGRES_DB: volksdb
+  mongodb:
+    image: mongo:7
+    container_name: vw-mongodb
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - postgres_data:/var/lib/postgresql/data
+      - mongo_data:/data/db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U volksdata -d volksdb"]
-      interval: 5s
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
-  postgres_data:
+  mongo_data:

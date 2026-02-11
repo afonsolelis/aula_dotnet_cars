@@ -6,17 +6,58 @@ Sistema completo de gerenciamento de carros da Volkswagen, desenvolvido em **.NE
 
 ---
 
-## Quick Start
+## Passo a Passo (Terminal)
+
+### 1. Entrar na pasta do projeto
 
 ```bash
-# 1. Subir o banco de dados
+cd aula_dotnet_cars
+```
+
+### 2. Restaurar dependencias
+
+```bash
+dotnet restore Volkswagen.Dashboard.WebApi.sln
+```
+
+### 3. Subir o banco (MongoDB via Docker)
+
+```bash
 docker compose up -d
+docker compose ps
+```
 
-# 2. Rodar a API
-cd Volkswagen.Dashboard.WebApi && dotnet run
+### 4. Subir a API (Terminal 1)
 
-# 3. Rodar o Frontend (em outro terminal)
-cd Volkswagen.Dashboard.Web && dotnet run --urls "http://localhost:5100"
+```bash
+cd Volkswagen.Dashboard.WebApi
+dotnet run
+```
+
+API: `http://localhost:5266`  
+Swagger: `http://localhost:5266/swagger`
+
+### 5. Subir o Frontend (Terminal 2)
+
+```bash
+cd Volkswagen.Dashboard.Web
+dotnet run --urls "http://localhost:5100"
+```
+
+Frontend: `http://localhost:5100`
+
+### 6. (Opcional) Testar login via curl (Terminal 3)
+
+```bash
+curl -X POST http://localhost:5266/api/user/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@vw.com","password":"admin123"}'
+```
+
+### 7. Parar ambiente
+
+```bash
+docker compose down
 ```
 
 **Credenciais de teste:**

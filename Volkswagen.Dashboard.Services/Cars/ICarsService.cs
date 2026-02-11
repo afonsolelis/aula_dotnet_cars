@@ -1,14 +1,13 @@
-﻿using Volkswagen.Dashboard.Repository;
-using System.Threading.Tasks;
+using Volkswagen.Dashboard.Repository;
 
 namespace Volkswagen.Dashboard.Services.Cars
 {
     public interface ICarsService
     {
-        int CreateCar(CarModel carModel);
-        Task<CarModel> GetCarById(int id);
+        string CreateCar(CarModel carModel);
+        Task<CarModel?> GetCarById(string id);
         Task<IEnumerable<CarModel>> GetCars();
-        Task<int> InsertCar(CarModel carModel);
-        Task DeleteCar(int id);
+        Task<string> InsertCar(CarModel carModel);
+        Task DeleteCar(string id);
     }
 }

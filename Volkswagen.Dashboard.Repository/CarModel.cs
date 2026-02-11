@@ -1,15 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Volkswagen.Dashboard.Repository
 {
     public class CarModel
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; } = string.Empty;
+
+        [BsonElement("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [BsonElement("dateRelease")]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateTime DateRelease { get; set; }
     }
 }

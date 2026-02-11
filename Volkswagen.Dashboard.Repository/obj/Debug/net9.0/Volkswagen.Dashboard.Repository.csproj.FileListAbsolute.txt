@@ -1,0 +1,13 @@
+/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/bin/Debug/net9.0/Volkswagen.Dashboard.Repository.deps.json
+/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/bin/Debug/net9.0/Volkswagen.Dashboard.Repository.dll
+/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/bin/Debug/net9.0/Volkswagen.Dashboard.Repository.pdb
+/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/obj/Debug/net9.0/Volkswagen.Dashboard.Repository.csproj.AssemblyReference.cache
+/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/obj/Debug/net9.0/Volkswagen.Dashboard.Repository.GeneratedMSBuildEditorConfig.editorconfig
+/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/obj/Debug/net9.0/Volkswagen.Dashboard.Repository.AssemblyInfoInputs.cache
+/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/obj/Debug/net9.0/Volkswagen.Dashboard.Repository.AssemblyInfo.cs
+/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/obj/Debug/net9.0/Volkswagen.Dashboard.Repository.csproj.CoreCompileInputs.cache
+/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/obj/Debug/net9.0/Volkswagen.Dashboard.Repository.sourcelink.json
+/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/obj/Debug/net9.0/Volkswagen.Dashboard.Repository.dll
+/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/obj/Debug/net9.0/refint/Volkswagen.Dashboard.Repository.dll
+/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/obj/Debug/net9.0/Volkswagen.Dashboard.Repository.pdb
+/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/obj/Debug/net9.0/ref/Volkswagen.Dashboard.Repository.dll

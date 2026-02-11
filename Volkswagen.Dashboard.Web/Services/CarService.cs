@@ -22,7 +22,7 @@ public class CarService : ICarService
         return response ?? new List<CarModel>();
     }
 
-    public async Task<CarModel?> GetCarByIdAsync(int id)
+    public async Task<CarModel?> GetCarByIdAsync(string id)
     {
         return await _httpClient.GetFromJsonAsync<CarModel>($"api/car/{id}");
     }
@@ -33,13 +33,13 @@ public class CarService : ICarService
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> UpdateCarAsync(int id, CarModel car)
+    public async Task<bool> UpdateCarAsync(string id, CarModel car)
     {
         var response = await _httpClient.PutAsJsonAsync($"api/car/{id}", car);
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> DeleteCarAsync(int id)
+    public async Task<bool> DeleteCarAsync(string id)
     {
         var response = await _httpClient.DeleteAsync($"api/car/{id}");
         return response.IsSuccessStatusCode;

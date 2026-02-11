@@ -1,13 +1,9 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using Volkswagen.Dashboard.Repository;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using Volkswagen.Dashboard.Repository;
 
 namespace Volkswagen.Dashboard.Services.Auth
 {
@@ -24,12 +20,17 @@ namespace Volkswagen.Dashboard.Services.Auth
         {
             var user = await _userRepository.GetUserByEmail(request.Email);
             if (user == null)
+            {
                 throw new ArgumentException("Usuário ou senha inválidos");
+            }
 
             request.Password = GetMD5Hash(request.Password);
 
             if (request.Password != user.Password)
+            {
                 throw new ArgumentException("Usuário ou senha inválidos");
+            }
+
             return GenerateToken(user);
         }
 
@@ -40,7 +41,7 @@ namespace Volkswagen.Dashboard.Services.Auth
             var expireAt = DateTime.UtcNow.AddHours(2);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim(ClaimTypes.Email, user.Email)
@@ -48,8 +49,9 @@ namespace Volkswagen.Dashboard.Services.Auth
                 Expires = expireAt,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
+
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return new LoginResponse()
+            return new LoginResponse
             {
                 CreatedAt = DateTime.UtcNow,
                 ExpiresAt = expireAt,
@@ -66,14 +68,19 @@ namespace Volkswagen.Dashboard.Services.Auth
                                        string.IsNullOrEmpty(request.Username);
 
                 if (isFaildedRequest)
+                {
                     throw new ArgumentException("Dados obrigatórios não informados");
+                }
 
-                // Verifica se o email esta na whitelist
                 if (!await _userRepository.IsEmailInWhitelist(request.Email))
+                {
                     throw new ArgumentException("Email não autorizado para registro");
+                }
 
                 if (await _userRepository.ExistWithEmail(request.Email))
+                {
                     throw new ArgumentException("Usuário já cadastrado na base");
+                }
 
                 request.Password = GetMD5Hash(request.Password);
 
@@ -81,29 +88,24 @@ namespace Volkswagen.Dashboard.Services.Auth
 
                 return true;
             }
-            catch(Exception)
+            catch
             {
                 return false;
             }
         }
 
-        private string GetMD5Hash(string input)
+        private static string GetMD5Hash(string input)
         {
-            MD5 md5Hash = MD5.Create();
-            // Converter a String para array de bytes, que é como a biblioteca trabalha.
-            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+            using var md5Hash = MD5.Create();
+            var data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+            var builder = new StringBuilder();
 
-            // Cria-se um StringBuilder para recompôr a string.
-            StringBuilder sBuilder = new StringBuilder();
-
-            // Loop para formatar cada byte como uma String em hexadecimal
-            for (int i = 0; i < data.Length; i++)
+            foreach (var value in data)
             {
-                sBuilder.Append(data[i].ToString("x2"));
+                builder.Append(value.ToString("x2"));
             }
 
-            return sBuilder.ToString();
+            return builder.ToString();
         }
-
     }
 }

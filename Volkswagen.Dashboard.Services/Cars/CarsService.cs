@@ -1,9 +1,3 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Volkswagen.Dashboard.Repository;
 
 namespace Volkswagen.Dashboard.Services.Cars
@@ -17,22 +11,25 @@ namespace Volkswagen.Dashboard.Services.Cars
             _carsRepository = carsRepository;
         }
 
-        public int CreateCar(CarModel carModel)
+        public string CreateCar(CarModel carModel)
         {
-            //_listCars.Add(carModel);
             return carModel.Id;
         }
 
-        public async Task<CarModel> GetCarById(int id) => await _carsRepository.GetCarById(id);
+        public async Task<CarModel?> GetCarById(string id) => await _carsRepository.GetCarById(id);
 
         public async Task<IEnumerable<CarModel>> GetCars() => await _carsRepository.GetCars();
 
-        public async Task<int> InsertCar(CarModel carModel)
+        public async Task<string> InsertCar(CarModel carModel)
         {
-            if (carModel.Id != 0)
+            if (!string.IsNullOrWhiteSpace(carModel.Id))
+            {
                 return await _carsRepository.UpdateCar(carModel);
+            }
+
             return await _carsRepository.InsertCar(carModel);
         }
-        public async Task DeleteCar(int id) => await _carsRepository.DeleteCar(id);
+
+        public async Task DeleteCar(string id) => await _carsRepository.DeleteCar(id);
     }
 }

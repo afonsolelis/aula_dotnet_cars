@@ -1,96 +1,72 @@
-﻿using Dapper;
-using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace Volkswagen.Dashboard.Repository
 {
     public class CarsRepository : ICarsRepository
     {
-        private readonly string _dbConfig;
+        private readonly IMongoCollection<CarModel> _cars;
 
-        public CarsRepository(string dbConfig)
+        public CarsRepository(IMongoDatabase database)
         {
-            _dbConfig = dbConfig;
+            _cars = database.GetCollection<CarModel>("cars");
         }
 
         public async Task<IEnumerable<CarModel>> GetCars()
         {
-            using (var conn = new NpgsqlConnection(_dbConfig))
-            {
-                await conn.OpenAsync();
-                return await conn.QueryAsync<CarModel>(@"
-                    SELECT 
-                        id,
-                        carname as Name,
-                        car_date_release as DateRelease
-                    FROM 
-                        volksdatatable
-                ");
-            }
+            return await _cars.Find(FilterDefinition<CarModel>.Empty)
+                .SortBy(x => x.Name)
+                .ToListAsync();
         }
 
-        public async Task<CarModel> GetCarById(int id)
+        public async Task<CarModel?> GetCarById(string id)
         {
-            using (var conn = new NpgsqlConnection(_dbConfig))
+            if (!ObjectId.TryParse(id, out _))
             {
-                await conn.OpenAsync();
-                return await conn.QueryFirstOrDefaultAsync<CarModel>(@"
-                    SELECT 
-                        id,
-                        carname as Name,
-                        car_date_release as DateRelease
-                    FROM 
-                        volksdatatable
-                    WHERE
-                        id = @IdCar
-                ", new {IdCar = id});
+                return null;
             }
+
+            return await _cars.Find(x => x.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<int> InsertCar(CarModel carModel)
+        public async Task<string> InsertCar(CarModel carModel)
         {
-            using (var conn = new NpgsqlConnection(_dbConfig))
+            var document = new CarModel
             {
-                await conn.OpenAsync();
-                return await conn.QueryFirstOrDefaultAsync<int>(@"
-                    INSERT INTO volksdatatable
-                        (id, carname, car_date_release)
-                    VALUES
-                        (nextval('volksdatatable_id_seq'::regclass), @Name, @DateRelease)
-                    RETURNING id
-                    
-                ", new { Name = carModel.Name, DateRelease = carModel.DateRelease });
-            }
+                Name = carModel.Name,
+                DateRelease = DateTime.SpecifyKind(carModel.DateRelease, DateTimeKind.Utc)
+            };
+
+            await _cars.InsertOneAsync(document);
+            return document.Id;
         }
 
-        public async Task DeleteCar(int id)
+        public async Task DeleteCar(string id)
         {
-            using (var conn = new NpgsqlConnection(_dbConfig))
+            if (!ObjectId.TryParse(id, out _))
             {
-                await conn.OpenAsync();
-                await conn.ExecuteAsync(@"
-                    DELETE FROM public.volksdatatable
-                    WHERE id=@Id;
-                ", new { Id = id });
+                return;
             }
+
+            await _cars.DeleteOneAsync(x => x.Id == id);
         }
 
-        public async Task<int> UpdateCar(CarModel carModel)
+        public async Task<string> UpdateCar(CarModel carModel)
         {
-            using (var conn = new NpgsqlConnection(_dbConfig))
+            if (!ObjectId.TryParse(carModel.Id, out _))
             {
-                await conn.OpenAsync();
-                await conn.ExecuteAsync(@"
-                    UPDATE volksdatatable
-                    SET carname=@Name, car_date_release=@DateRelease
-                    WHERE id=@Id;
-                ", new { Id = carModel.Id, Name = carModel.Name, DateRelease = carModel.DateRelease });
-                return carModel.Id;
+                return string.Empty;
             }
+
+            var updated = new CarModel
+            {
+                Id = carModel.Id,
+                Name = carModel.Name,
+                DateRelease = DateTime.SpecifyKind(carModel.DateRelease, DateTimeKind.Utc)
+            };
+
+            var result = await _cars.ReplaceOneAsync(x => x.Id == carModel.Id, updated);
+            return result.MatchedCount > 0 ? carModel.Id : string.Empty;
         }
     }
 }

@@ -1,65 +1,65 @@
-﻿using Dapper;
-using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using Volkswagen.Dashboard.Repository.Documents;
 
 namespace Volkswagen.Dashboard.Repository
 {
     public class UserRepository : IUserRepository
     {
-        private readonly string _dbConfig;
+        private readonly IMongoCollection<UserDocument> _users;
+        private readonly IMongoCollection<EmailWhitelistDocument> _whitelist;
 
-        public UserRepository(string dbConfig)
+        public UserRepository(IMongoDatabase database)
         {
-            _dbConfig = dbConfig;
+            _users = database.GetCollection<UserDocument>("users");
+            _whitelist = database.GetCollection<EmailWhitelistDocument>("email_whitelist");
         }
+
         public async Task<bool> ExistWithEmail(string email)
         {
-            return await GetUserByEmail(email) != null;
+            var count = await _users.CountDocumentsAsync(x => x.Credentials.Email == email);
+            return count > 0;
         }
 
-        public async Task<UserModel> GetUserByEmail(string email)
+        public async Task<UserModel?> GetUserByEmail(string email)
         {
-            using (var conn = new NpgsqlConnection(_dbConfig))
+            var user = await _users.Find(x => x.Credentials.Email == email).FirstOrDefaultAsync();
+            if (user is null)
             {
-                await conn.OpenAsync();
-                return await conn.QueryFirstOrDefaultAsync<UserModel>(@"
-                    SELECT 
-                        email, username, password
-                    FROM 
-                        users
-                    WHERE
-                        email = @Email
-                ", new { Email = email });
+                return null;
             }
+
+            return new UserModel
+            {
+                Username = user.Profile.Username,
+                Email = user.Credentials.Email,
+                Password = user.Credentials.PasswordHash
+            };
         }
 
         public async Task InsertUser(string email, string username, string password)
         {
-            using (var conn = new NpgsqlConnection(_dbConfig))
+            var whitelistEntry = await _whitelist.Find(x => x.Email == email).FirstOrDefaultAsync();
+
+            var user = new UserDocument
             {
-                await conn.OpenAsync();
-                var result = await conn.ExecuteAsync(@"
-                    INSERT INTO public.users
-                        (username, email, password, created_at)
-                    VALUES(@Username, @Email, @Password, CURRENT_TIMESTAMP);
-                ", new { Username = username, Email = email, Password = password });
-            }
+                Profile = new UserProfile { Username = username },
+                Credentials = new UserCredentials
+                {
+                    Email = email,
+                    PasswordHash = password
+                },
+                WhitelistEntryId = whitelistEntry?.Id,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _users.InsertOneAsync(user);
         }
 
         public async Task<bool> IsEmailInWhitelist(string email)
         {
-            using (var conn = new NpgsqlConnection(_dbConfig))
-            {
-                await conn.OpenAsync();
-                var count = await conn.ExecuteScalarAsync<int>(@"
-                    SELECT COUNT(*) FROM email_whitelist WHERE email = @Email
-                ", new { Email = email });
-                return count > 0;
-            }
+            var count = await _whitelist.CountDocumentsAsync(x => x.Email == email);
+            return count > 0;
         }
     }
 }

@@ -1,37 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\afons\\source\\repos\\aula_dotnet_cars\\Volkswagen.Dashboard.Repository\\Volkswagen.Dashboard.Repository.csproj": {}
+    "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/Volkswagen.Dashboard.Repository.csproj": {}
   },
   "projects": {
-    "C:\\Users\\afons\\source\\repos\\aula_dotnet_cars\\Volkswagen.Dashboard.Repository\\Volkswagen.Dashboard.Repository.csproj": {
+    "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/Volkswagen.Dashboard.Repository.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\afons\\source\\repos\\aula_dotnet_cars\\Volkswagen.Dashboard.Repository\\Volkswagen.Dashboard.Repository.csproj",
+        "projectUniqueName": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/Volkswagen.Dashboard.Repository.csproj",
         "projectName": "Volkswagen.Dashboard.Repository",
-        "projectPath": "C:\\Users\\afons\\source\\repos\\aula_dotnet_cars\\Volkswagen.Dashboard.Repository\\Volkswagen.Dashboard.Repository.csproj",
-        "packagesPath": "C:\\Users\\afons\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\afons\\source\\repos\\aula_dotnet_cars\\Volkswagen.Dashboard.Repository\\obj\\",
+        "projectPath": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/Volkswagen.Dashboard.Repository.csproj",
+        "packagesPath": "/tmp/.nuget/packages/",
+        "outputPath": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\afons\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/tmp/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net8.0"
+          "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net8.0": {
-            "targetAlias": "net8.0",
+          "net9.0": {
+            "targetAlias": "net9.0",
             "projectReferences": {}
           }
         },
@@ -39,19 +32,21 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
+        "net9.0": {
+          "targetAlias": "net9.0",
           "dependencies": {
-            "Dapper": {
+            "MongoDB.Driver": {
               "target": "Package",
-              "version": "[2.1.28, )"
-            },
-            "Npgsql": {
-              "target": "Package",
-              "version": "[8.0.1, )"
+              "version": "[2.24.0, )"
             }
           },
           "imports": [
@@ -70,7 +65,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/home/afonsolelis/dotnet/sdk/9.0.310/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
