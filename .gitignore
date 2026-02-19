@@ -165,3 +165,12 @@ PublishScripts/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Classroom guardrails: never version build/test artifacts
+**/bin/
+**/obj/
+**/TestResults/
+**/CoverageReport/
+coverage*.xml
+*.coverage
+*.coveragexml

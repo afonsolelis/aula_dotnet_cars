@@ -336,3 +336,30 @@ Checklist AAA:
 2. Tornar testes assíncronos com `async/await` (evitar `GetAwaiter().GetResult()`).
 3. Adicionar testes para fluxos de erro no `CarsService` e `AuthService`.
 4. Criar pipeline CI para rodar `dotnet test` automaticamente.
+
+## 11) Importância de um `.gitignore` completo (e por que não subir `bin/`)
+
+Um `.gitignore` incompleto causa poluição no repositório e dificulta muito o trabalho em equipe.
+
+Por que **não** versionar `bin/`, `obj/` e `TestResults/`:
+- São artefatos gerados automaticamente pelo build/teste.
+- Mudam entre máquinas, sistema operacional e versão do SDK.
+- Geram diffs enormes e ruído em pull requests.
+- Podem criar conflitos de merge desnecessários.
+- Aumentam o tamanho do repositório sem agregar código-fonte.
+- Podem mascarar problemas reais (parece “mudança de código”, mas é só build).
+
+Regra prática para turma:
+- Commitar apenas código-fonte, configuração e documentação.
+- Nunca commitar saída de compilação (`bin/`, `obj/`) nem cobertura (`TestResults/`, `CoverageReport/`).
+
+Regras recomendadas no `.gitignore`:
+```gitignore
+**/bin/
+**/obj/
+**/TestResults/
+**/CoverageReport/
+coverage*.xml
+*.coverage
+*.coveragexml
+```
