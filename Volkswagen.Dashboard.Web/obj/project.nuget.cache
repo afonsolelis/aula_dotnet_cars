@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Lv983EBNZv0=",
+  "dgSpecHash": "Pofi4Ex/3XI=",
   "success": true,
-  "projectFilePath": "/home/afonsolelis/Documentos/inteli/aula_dotnet_cars/Volkswagen.Dashboard.Web/Volkswagen.Dashboard.Web.csproj",
+  "projectFilePath": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Web/Volkswagen.Dashboard.Web.csproj",
   "expectedPackageFiles": [
     "/home/afonsolelis/.nuget/packages/blazor-apexcharts/6.1.0/blazor-apexcharts.6.1.0.nupkg.sha512",
     "/home/afonsolelis/.nuget/packages/microsoft.aspnetcore.authorization/9.0.2/microsoft.aspnetcore.authorization.9.0.2.nupkg.sha512",

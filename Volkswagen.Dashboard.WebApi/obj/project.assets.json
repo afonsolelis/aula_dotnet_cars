@@ -2640,7 +2640,7 @@
     ]
   },
   "packageFolders": {
-    "/tmp/.nuget/packages/": {}
+    "/home/afonsolelis/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
@@ -2648,11 +2648,11 @@
       "projectUniqueName": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.WebApi/Volkswagen.Dashboard.WebApi.csproj",
       "projectName": "Volkswagen.Dashboard.WebApi",
       "projectPath": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.WebApi/Volkswagen.Dashboard.WebApi.csproj",
-      "packagesPath": "/tmp/.nuget/packages/",
+      "packagesPath": "/home/afonsolelis/.nuget/packages/",
       "outputPath": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.WebApi/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/tmp/.nuget/NuGet/NuGet.Config"
+        "/home/afonsolelis/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"

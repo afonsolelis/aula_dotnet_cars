@@ -10,11 +10,11 @@
         "projectUniqueName": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/Volkswagen.Dashboard.Repository.csproj",
         "projectName": "Volkswagen.Dashboard.Repository",
         "projectPath": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/Volkswagen.Dashboard.Repository.csproj",
-        "packagesPath": "/tmp/.nuget/packages/",
+        "packagesPath": "/home/afonsolelis/.nuget/packages/",
         "outputPath": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Repository/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/tmp/.nuget/NuGet/NuGet.Config"
+          "/home/afonsolelis/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -75,11 +75,11 @@
         "projectUniqueName": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Services/Volkswagen.Dashboard.Services.csproj",
         "projectName": "Volkswagen.Dashboard.Services",
         "projectPath": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Services/Volkswagen.Dashboard.Services.csproj",
-        "packagesPath": "/tmp/.nuget/packages/",
+        "packagesPath": "/home/afonsolelis/.nuget/packages/",
         "outputPath": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Services/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/tmp/.nuget/NuGet/NuGet.Config"
+          "/home/afonsolelis/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"

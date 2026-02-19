@@ -1026,11 +1026,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/afonsolelis/Documentos/inteli/aula_dotnet_cars/Volkswagen.Dashboard.Web/Volkswagen.Dashboard.Web.csproj",
+      "projectUniqueName": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Web/Volkswagen.Dashboard.Web.csproj",
       "projectName": "Volkswagen.Dashboard.Web",
-      "projectPath": "/home/afonsolelis/Documentos/inteli/aula_dotnet_cars/Volkswagen.Dashboard.Web/Volkswagen.Dashboard.Web.csproj",
+      "projectPath": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Web/Volkswagen.Dashboard.Web.csproj",
       "packagesPath": "/home/afonsolelis/.nuget/packages/",
-      "outputPath": "/home/afonsolelis/Documentos/inteli/aula_dotnet_cars/Volkswagen.Dashboard.Web/obj/",
+      "outputPath": "/home/afonsolelis/aula_dotnet_cars/Volkswagen.Dashboard.Web/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/afonsolelis/.nuget/NuGet/NuGet.Config"
@@ -1087,7 +1087,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/home/afonsolelis/.dotnet/sdk/9.0.310/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/home/afonsolelis/dotnet/sdk/9.0.310/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
