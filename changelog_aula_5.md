@@ -6,16 +6,16 @@ Fonte da aula: https://afonsolelis.github.io/aulas/pages/module-9-sistemas-infor
 ## 1) O que a aula 5 cobre
 
 A aula aborda, em sequência:
-- História da GoF e por que padrões existem.
+- História da GoF (Gang of Four, grupo de 4 autores que catalogou padrões clássicos de projeto) e por que padrões existem.
 - Categorias de padrões: Criacionais, Estruturais e Comportamentais.
 - Padrões essenciais (Singleton, Factory Method, Observer, Strategy, Decorator, Adapter, Chain of Responsibility).
-- Padrões modernos: Event Sourcing, CQRS e combinação CQRS + Event Sourcing.
-- Padrões de microservices: Circuit Breaker, Saga, API Gateway, Strangler Fig, Service Mesh/Observability.
+- Padrões modernos: Event Sourcing, CQRS (Command Query Responsibility Segregation, separação entre escrita e leitura) e combinação CQRS + Event Sourcing.
+- Padrões de microservices: Circuit Breaker, Saga, API Gateway (camada única de entrada para clientes), Strangler Fig, Service Mesh/Observability.
 - Anti-patterns e quando não usar padrão.
 
 ## 2) Mapa rápido do projeto (onde cada camada está)
 
-- API: `Volkswagen.Dashboard.WebApi`
+- API (Application Programming Interface, contrato de comunicação entre cliente e backend): `Volkswagen.Dashboard.WebApi`
 - Serviços de negócio: `Volkswagen.Dashboard.Services`
 - Repositório/dados (Mongo): `Volkswagen.Dashboard.Repository`
 - Frontend Blazor: `Volkswagen.Dashboard.Web`
@@ -27,20 +27,20 @@ Fluxo atual principal:
 ## 3) Onde os conceitos da aula aparecem hoje no código
 
 ### 3.1 Singleton
-- Já aparece por DI no ASP.NET Core:
+- Já aparece por DI (Dependency Injection, ou Injeção de Dependência: técnica de entregar dependências prontas para uma classe em vez de ela criar tudo sozinha) no ASP.NET Core:
   - `Volkswagen.Dashboard.WebApi/Program.cs`
   - Registros `AddSingleton<IMongoClient>`, `AddSingleton<IMongoSchemaInitializer>`.
 - Observação para alunos: em .NET moderno, muitas vezes usamos Singleton via container DI em vez de classe Singleton manual.
 
 ### 3.2 Factory (Factory Method)
 - Não há Factory Method explícito no domínio atualmente.
-- Há um ponto parecido com “fábrica de cliente HTTP” via DI:
+- Há um ponto parecido com “fábrica de cliente HTTP (HyperText Transfer Protocol, protocolo de comunicação web)” via DI:
   - `Volkswagen.Dashboard.Web/Program.cs` com `AddHttpClient<ICarService, CarService>` e `AddHttpClient<IAuthService, AuthService>`.
 - Próximo passo didático: criar `NotificacaoFactory` ou `RelatorioFactory` na camada `Services`.
 
 ### 3.3 Observer
 - Não há implementação explícita de Observer no backend hoje.
-- Referência conceitual: o próprio modelo de eventos em UI reativa (Blazor) segue a ideia de pub/sub internamente.
+- Referência conceitual: o próprio modelo de eventos em UI (User Interface, camada de interface com o usuário) reativa (Blazor) segue a ideia de pub/sub (publish/subscribe: um componente publica evento e vários assinantes recebem) internamente.
 - Próximo passo didático: criar um fluxo de evento de domínio (ex.: `CarroCriadoEvent`) e subscribers internos.
 
 ### 3.4 Strategy
@@ -133,7 +133,7 @@ Objetivo: desacoplar ações secundárias da ação principal.
 Objetivo: desacoplar API de terceiros do seu domínio.
 
 1. Criar interface alvo na `Services` (ex.: `IAnalyticsClient`).
-2. Criar `AnalyticsAdapter` que converte DTO interno para contrato externo.
+2. Criar `AnalyticsAdapter` que converte DTO (Data Transfer Object, objeto simples de transporte de dados entre camadas) interno para contrato externo.
 3. Isolar chamadas HTTP do provedor externo no adapter.
 4. Mockar adapter nos testes de serviço.
 
@@ -180,7 +180,7 @@ Evitar:
 1. Conseguir apontar no código um exemplo de Singleton via DI.
 2. Explicar por que middleware do ASP.NET se relaciona com Decorator/Chain.
 3. Implementar 1 padrão novo (Strategy recomendado) com testes.
-4. Registrar no PR: problema original, padrão escolhido e ganho obtido.
+4. Registrar no PR/MR (Pull Request no GitHub, Merge Request no GitLab: proposta formal de alteração para revisão e merge): problema original, padrão escolhido e ganho obtido.
 5. Não subir artefatos de build/teste (`bin/`, `obj/`, `TestResults/`).
 
 ## 9) Comandos úteis para laboratório
