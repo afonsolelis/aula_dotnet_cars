@@ -10,8 +10,8 @@ A aula 6 cobre:
 - Classes e instâncias (atributos, métodos, construtores).
 - Herança e polimorfismo.
 - Interfaces e classes abstratas.
-- UML de classes e relações (associação, agregação, composição, herança).
-- Modelo MVC em C# e separação de responsabilidades.
+- UML (Unified Modeling Language, ou Linguagem de Modelagem Unificada): padrão visual para representar classes, relações e estrutura do software.
+- Modelo MVC (Model-View-Controller): arquitetura que separa dados/regra (Model), interface (View) e fluxo de entrada/saída (Controller).
 - Boas práticas para projetos corporativos.
 
 ## 2) Onde isso aparece no projeto atual
@@ -24,11 +24,11 @@ Exemplos de classes concretas:
 - `Volkswagen.Dashboard.Services/Auth/AuthService.cs`
 
 Como observar instâncias na prática:
-- O ASP.NET cria instâncias por requisição via DI em `Volkswagen.Dashboard.WebApi/Program.cs`.
+- O ASP.NET (framework web do .NET) cria instâncias por requisição via DI (Dependency Injection, ou Injeção de Dependência), que é a técnica de fornecer dependências prontas para uma classe em vez de ela criar tudo sozinha.
 - Exemplo: `CarsService` recebe uma instância de `ICarsRepository` no construtor.
 
 ### 2.2 Herança e polimorfismo
-No projeto atual, o uso mais claro de herança/polimorfismo está na API:
+No projeto atual, o uso mais claro de herança/polimorfismo está na API (Application Programming Interface), que é a camada de contrato de comunicação entre sistemas/clientes e o backend:
 - `Volkswagen.Dashboard.WebApi/Controllers/CarController.cs`
 - `Volkswagen.Dashboard.WebApi/Controllers/UserController.cs`
 
@@ -51,11 +51,11 @@ Implementações concretas:
 
 ### 2.4 MVC (adaptação ao projeto)
 O projeto não está em ASP.NET MVC tradicional com Views Razor no backend; ele está dividido em:
-- API REST (`WebApi`) para controller + lógica de aplicação.
+- API REST (Representational State Transfer), estilo arquitetural de APIs HTTP baseado em recursos e verbos (GET, POST, PUT, DELETE), em `WebApi` para controller + lógica de aplicação.
 - Frontend Blazor (`Web`) como camada de interface.
 
 Mapeamento didático para entender MVC no contexto atual:
-- Model: `CarModel`, `UserModel`, DTOs de Auth.
+- Model: `CarModel`, `UserModel`, DTOs (Data Transfer Objects, ou Objetos de Transferência de Dados), que são objetos simples usados para transportar dados entre camadas sem carregar regra de negócio.
 - Controller: `CarController`, `UserController`.
 - View: páginas Blazor em `Volkswagen.Dashboard.Web/Components/Pages`.
 
