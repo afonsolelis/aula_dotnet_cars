@@ -25,7 +25,7 @@ public sealed class CarsRepositoryMongoContainerTests
         }
         catch (Exception ex)
         {
-            Assert.Ignore($"Docker indisponivel para Testcontainers: {ex.Message}");
+            Assert.Fail($"Docker indisponivel para Testcontainers: {ex.Message}");
         }
     }
 
