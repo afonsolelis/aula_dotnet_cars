@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option csharp_namespace = "Volkswagen.Dashboard.WebApi.Protos";
+
+package car;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+service CarGrpc {
+  rpc GetCars (google.protobuf.Empty) returns (GetCarsReply);
+  rpc GetCarById (GetCarByIdRequest) returns (GetCarByIdReply);
+}
+
+message GetCarByIdRequest {
+  string id = 1;
+}
+
+message GetCarsReply {
+  repeated CarItem cars = 1;
+}
+
+message GetCarByIdReply {
+  bool found = 1;
+  CarItem car = 2;
+}
+
+message CarItem {
+  string id = 1;
+  string name = 2;
+  google.protobuf.Timestamp date_release = 3;
+}

@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MediatR;
 using Volkswagen.Dashboard.Repository;
-using Volkswagen.Dashboard.Services.Cars;
+using Volkswagen.Dashboard.Services.Cars.Cqrs.Commands;
+using Volkswagen.Dashboard.Services.Cars.Cqrs.Queries;
 using Volkswagen.Dashboard.WebApi.Validators;
 
 namespace Volkswagen.Dashboard.WebApi.Controllers
@@ -10,11 +12,11 @@ namespace Volkswagen.Dashboard.WebApi.Controllers
     [ApiController]
     public class CarController : ControllerBase
     {
-        private readonly ICarsService _carsService;
+        private readonly IMediator _mediator;
 
-        public CarController(ICarsService carsService)
+        public CarController(IMediator mediator)
         {
-            _carsService = carsService;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -23,13 +25,13 @@ namespace Volkswagen.Dashboard.WebApi.Controllers
         {
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             TokenValidator.GetPermissionFromToken(token);
-            return Ok(await _carsService.GetCars());
+            return Ok(await _mediator.Send(new GetCarsQuery()));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCar([FromRoute] string id)
         {
-            var car = await _carsService.GetCarById(id);
+            var car = await _mediator.Send(new GetCarByIdQuery(id));
             if (car is null)
             {
                 return NotFound("Carro não encontrado!");
@@ -41,22 +43,21 @@ namespace Volkswagen.Dashboard.WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCar([FromBody] CarModel carModel)
         {
-            var id = await _carsService.InsertCar(carModel);
+            var id = await _mediator.Send(new CreateCarCommand(carModel.Name, carModel.DateRelease));
             return CreatedAtAction(nameof(GetCar), new { id }, new { id });
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCar([FromRoute] string id)
         {
-            await _carsService.DeleteCar(id);
+            await _mediator.Send(new DeleteCarCommand(id));
             return NoContent();
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCar([FromBody] CarModel carModel, [FromRoute] string id)
         {
-            carModel.Id = id;
-            var result = await _carsService.InsertCar(carModel);
+            var result = await _mediator.Send(new UpdateCarCommand(id, carModel.Name, carModel.DateRelease));
             if (string.IsNullOrWhiteSpace(result))
             {
                 return NotFound("Carro não encontrado!");

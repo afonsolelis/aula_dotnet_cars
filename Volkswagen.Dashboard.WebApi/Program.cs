@@ -2,10 +2,13 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using MediatR;
 using MongoDB.Driver;
 using Volkswagen.Dashboard.Repository;
 using Volkswagen.Dashboard.Services.Auth;
 using Volkswagen.Dashboard.Services.Cars;
+using Volkswagen.Dashboard.Services.Shipping;
+using Volkswagen.Dashboard.WebApi.Grpc;
 
 var key = Encoding.ASCII.GetBytes("d8cf9a98-bfb2-4e0a-85b3-7c94f8e908ad");
 
@@ -29,6 +32,12 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICarsService, CarsService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<IMongoSchemaInitializer, MongoSchemaInitializer>();
+builder.Services.AddHttpClient<ICepLookupService, ViaCepLookupService>(client =>
+{
+    client.BaseAddress = new Uri("https://viacep.com.br/");
+});
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(ICarsService).Assembly));
+builder.Services.AddGrpc();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -87,5 +96,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGrpcService<CarGrpcService>();
 
 app.Run();

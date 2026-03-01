@@ -374,6 +374,35 @@ dotnet test --collect:"XPlat Code Coverage"
 
 ---
 
+## MediatR CQRS e gRPC (Aula)
+
+Foi adicionada uma versao inicial para ensino:
+
+- `MediatR + CQRS` na API de carros (queries e commands separados).
+- `gRPC` no mesmo projeto `WebApi`, com metodos de consulta.
+
+Arquivos principais:
+
+- `Volkswagen.Dashboard.Services/Cars/Cqrs/Commands/*`
+- `Volkswagen.Dashboard.Services/Cars/Cqrs/Queries/*`
+- `Volkswagen.Dashboard.Services/Cars/Cqrs/Handlers/*`
+- `Volkswagen.Dashboard.WebApi/Grpc/CarGrpcService.cs`
+- `Volkswagen.Dashboard.WebApi/Protos/car.proto`
+- `Volkswagen.Dashboard.WebApi/Controllers/CarController.cs`
+- `Volkswagen.Dashboard.WebApi/Program.cs`
+
+Exemplo de chamadas gRPC:
+
+- `GetCars(google.protobuf.Empty) -> GetCarsReply`
+- `GetCarById(GetCarByIdRequest) -> GetCarByIdReply`
+
+Observacao didatica:
+
+- REST e gRPC podem coexistir na mesma API para comparacao em aula.
+- O frontend atual continua em REST; cliente gRPC no Blazor pode entrar como proximo passo.
+
+---
+
 ## Conceitos Abordados
 
 - [x] Arquitetura em camadas
