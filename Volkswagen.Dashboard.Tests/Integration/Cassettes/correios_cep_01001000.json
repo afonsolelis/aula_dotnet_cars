@@ -1,0 +1,7 @@
+{
+  "method": "GET",
+  "url": "https://brasilapi.com.br/api/cep/v2/01001000",
+  "recordedAtUtc": "2026-03-04T18:00:00Z",
+  "statusCode": 200,
+  "responseBody": "{\n  \"cep\": \"01001-000\",\n  \"state\": \"SP\",\n  \"city\": \"Sao Paulo\",\n  \"neighborhood\": \"Se\",\n  \"street\": \"Praca da Se\",\n  \"service\": \"correios\"\n}"
+}
