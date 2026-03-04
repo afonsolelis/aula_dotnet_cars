@@ -73,6 +73,7 @@ Para aula, essa etapa pode ser `allow_failure`:
 ## Comandos uteis da aula
 - Rodar testes:
   - `dotnet test Volkswagen.Dashboard.Tests/Volkswagen.Dashboard.Tests.csproj`
+- Rodar apenas o teste de Testcontainers (MongoDB):
+  - `dotnet test Volkswagen.Dashboard.Tests/Volkswagen.Dashboard.Tests.csproj --filter "FullyQualifiedName~CarsRepositoryTestcontainersTests.InsertAndGetById_ShouldPersistUsingRealMongoContainer"`
 - Regravar cassete VCR:
   - `VCR_MODE=record dotnet test Volkswagen.Dashboard.Tests/Volkswagen.Dashboard.Tests.csproj --filter "FullyQualifiedName~CorreiosApiVcrTests"`
-
