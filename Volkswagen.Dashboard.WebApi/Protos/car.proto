@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+option csharp_namespace = "Volkswagen.Dashboard.WebApi.Grpc";
+
+package car;
+
+// ── Definição do serviço ─────────────────────────────────────────────────────
+service CarService {
+  rpc GetCars    (GetCarsRequest)    returns (GetCarsResponse);
+  rpc GetCarById (GetCarByIdRequest) returns (CarResponse);
+  rpc InsertCar  (InsertCarRequest)  returns (InsertCarResponse);
+  rpc UpdateCar  (UpdateCarRequest)  returns (UpdateCarResponse);
+  rpc DeleteCar  (DeleteCarRequest)  returns (DeleteCarResponse);
+}
+
+// ── Mensagens ─────────────────────────────────────────────────────────────────
+message GetCarsRequest {}
+
+message GetCarsResponse {
+  repeated CarResponse cars = 1;
+}
+
+message GetCarByIdRequest {
+  string id = 1;
+}
+
+message InsertCarRequest {
+  string name         = 1;
+  string date_release = 2;  // ISO 8601: "2024-01-01T00:00:00Z"
+}
+
+message InsertCarResponse {
+  string id = 1;
+}
+
+message UpdateCarRequest {
+  string id           = 1;
+  string name         = 2;
+  string date_release = 3;
+}
+
+message UpdateCarResponse {
+  string id = 1;
+}
+
+message DeleteCarRequest {
+  string id = 1;
+}
+
+message DeleteCarResponse {
+  bool success = 1;
+}
+
+message CarResponse {
+  string id           = 1;
+  string name         = 2;
+  string date_release = 3;
+}

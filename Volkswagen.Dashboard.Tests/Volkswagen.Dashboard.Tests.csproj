@@ -10,6 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Grpc.Net.Client" Version="2.67.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
     <PackageReference Include="NUnit" Version="3.13.3" />
@@ -21,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Volkswagen.Dashboard.Repository\Volkswagen.Dashboard.Repository.csproj" />
     <ProjectReference Include="..\Volkswagen.Dashboard.Services\Volkswagen.Dashboard.Services.csproj" />
+    <ProjectReference Include="..\Volkswagen.Dashboard.WebApi\Volkswagen.Dashboard.WebApi.csproj" />
   </ItemGroup>
 
 </Project>
