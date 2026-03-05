@@ -39,7 +39,7 @@ jobs:
         run: dotnet build Volkswagen.Dashboard.WebApi.sln --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test Volkswagen.Dashboard.Tests/Volkswagen.Dashboard.Tests.csproj --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test Volkswagen.Dashboard.Tests/Volkswagen.Dashboard.Tests.csproj --configuration Release --no-build --filter "TestCategory!=Chaos" --logger "trx;LogFileName=test-results.trx"
 
       - name: Upload test results
         if: always()

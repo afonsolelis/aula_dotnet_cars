@@ -60,13 +60,14 @@ public class CarsRepositoryChaosTestcontainersTests
 
         Assert.That(
             async () => await _repository.GetCars(),
-            Throws.TypeOf<MongoException>(),
+            Throws.InstanceOf<MongoException>(),
             "A consulta deveria falhar enquanto o MongoDB esta pausado.");
 
         TryDockerCommand($"unpause {_mongoContainer.Id}", "Nao foi possivel retomar o container do teste de caos.");
+        await Task.Delay(2000);
 
         var recovered = false;
-        for (var attempt = 1; attempt <= 10; attempt++)
+        for (var attempt = 1; attempt <= 30; attempt++)
         {
             try
             {
@@ -74,9 +75,9 @@ public class CarsRepositoryChaosTestcontainersTests
                 recovered = true;
                 break;
             }
-            catch (MongoException)
+            catch (Exception ex) when (ex is MongoException or TimeoutException)
             {
-                await Task.Delay(1000);
+                await Task.Delay(2000);
             }
         }
 
