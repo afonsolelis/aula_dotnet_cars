@@ -1,111 +1,84 @@
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using Volkswagen.Dashboard.Repository;
+using Volkswagen.Dashboard.Domain.Common;
+using Volkswagen.Dashboard.Domain.Repositories;
+using Volkswagen.Dashboard.Domain.Users;
+using Volkswagen.Dashboard.Services.Security;
 
-namespace Volkswagen.Dashboard.Services.Auth
+namespace Volkswagen.Dashboard.Services.Auth;
+
+public class AuthService : IAuthService
 {
-    public class AuthService : IAuthService
+    private readonly IUserRepository _userRepository;
+    private readonly IAuthorizedEmailRepository _authorizedEmailRepository;
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly ITokenService _tokenService;
+
+    public AuthService(
+        IUserRepository userRepository,
+        IAuthorizedEmailRepository authorizedEmailRepository,
+        IPasswordHasher passwordHasher,
+        ITokenService tokenService)
     {
-        private readonly IUserRepository _userRepository;
+        _userRepository = userRepository;
+        _authorizedEmailRepository = authorizedEmailRepository;
+        _passwordHasher = passwordHasher;
+        _tokenService = tokenService;
+    }
 
-        public AuthService(IUserRepository userRepository)
+    public async Task<LoginResponse> Login(LoginRequest request)
+    {
+        try
         {
-            _userRepository = userRepository;
+            var email = new EmailAddress(request.Email);
+            var user = await _userRepository.GetByEmailAsync(email);
+
+            if (user is null)
+            {
+                throw new DomainException("Usuário ou senha inválidos");
+            }
+
+            var passwordHash = _passwordHasher.Hash(request.Password);
+            if (!string.Equals(passwordHash, user.PasswordHash, StringComparison.Ordinal))
+            {
+                throw new DomainException("Usuário ou senha inválidos");
+            }
+
+            return _tokenService.GenerateToken(user);
         }
-
-        public async Task<LoginResponse> Login(LoginRequest request)
+        catch (DomainException ex)
         {
-            var user = await _userRepository.GetUserByEmail(request.Email);
-            if (user == null)
-            {
-                throw new ArgumentException("Usuário ou senha inválidos");
-            }
-
-            request.Password = GetMD5Hash(request.Password);
-
-            if (request.Password != user.Password)
-            {
-                throw new ArgumentException("Usuário ou senha inválidos");
-            }
-
-            return GenerateToken(user);
+            throw new ArgumentException(ex.Message);
         }
+    }
 
-        private LoginResponse GenerateToken(UserModel user)
+    public async Task<bool> Register(RegisterRequest request)
+    {
+        try
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("d8cf9a98-bfb2-4e0a-85b3-7c94f8e908ad");
-            var expireAt = DateTime.UtcNow.AddHours(2);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var email = new EmailAddress(request.Email);
+            var authorizedEmail = await _authorizedEmailRepository.GetAuthorizedEmailAsync(email);
+            if (authorizedEmail is null)
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.Email, user.Email)
-                }),
-                Expires = expireAt,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
+                throw new DomainException("Email não autorizado para registro");
+            }
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return new LoginResponse
+            if (await _userRepository.ExistsByEmailAsync(email))
             {
-                CreatedAt = DateTime.UtcNow,
-                ExpiresAt = expireAt,
-                AccessToken = tokenHandler.WriteToken(token)
-            };
+                throw new DomainException("Usuário já cadastrado na base");
+            }
+
+            var passwordHash = _passwordHasher.Hash(request.Password);
+            var user = User.Register(
+                request.Username,
+                email,
+                passwordHash,
+                whitelistEntryId: authorizedEmail.Id);
+
+            await _userRepository.AddAsync(user);
+            return true;
         }
-
-        public async Task<bool> Register(RegisterRequest request)
+        catch (DomainException)
         {
-            try
-            {
-                var isFaildedRequest = string.IsNullOrEmpty(request.Email) ||
-                                       string.IsNullOrEmpty(request.Password) ||
-                                       string.IsNullOrEmpty(request.Username);
-
-                if (isFaildedRequest)
-                {
-                    throw new ArgumentException("Dados obrigatórios não informados");
-                }
-
-                if (!await _userRepository.IsEmailInWhitelist(request.Email))
-                {
-                    throw new ArgumentException("Email não autorizado para registro");
-                }
-
-                if (await _userRepository.ExistWithEmail(request.Email))
-                {
-                    throw new ArgumentException("Usuário já cadastrado na base");
-                }
-
-                request.Password = GetMD5Hash(request.Password);
-
-                await _userRepository.InsertUser(request.Email, request.Username, request.Password);
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private static string GetMD5Hash(string input)
-        {
-            using var md5Hash = MD5.Create();
-            var data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
-            var builder = new StringBuilder();
-
-            foreach (var value in data)
-            {
-                builder.Append(value.ToString("x2"));
-            }
-
-            return builder.ToString();
+            return false;
         }
     }
 }

@@ -1,11 +1,10 @@
 using MediatR;
-using Volkswagen.Dashboard.Repository;
 using Volkswagen.Dashboard.Services.Cars;
 using Volkswagen.Dashboard.Services.CQRS.Queries;
 
 namespace Volkswagen.Dashboard.Services.CQRS.Handlers;
 
-public class GetCarsQueryHandler : IRequestHandler<GetCarsQuery, IEnumerable<CarModel>>
+public class GetCarsQueryHandler : IRequestHandler<GetCarsQuery, IReadOnlyCollection<CarDto>>
 {
     private readonly ICarsService _carsService;
 
@@ -14,6 +13,6 @@ public class GetCarsQueryHandler : IRequestHandler<GetCarsQuery, IEnumerable<Car
         _carsService = carsService;
     }
 
-    public Task<IEnumerable<CarModel>> Handle(GetCarsQuery request, CancellationToken cancellationToken)
-        => _carsService.GetCars();
+    public Task<IReadOnlyCollection<CarDto>> Handle(GetCarsQuery request, CancellationToken cancellationToken)
+        => _carsService.GetCarsAsync();
 }

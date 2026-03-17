@@ -1,6 +1,6 @@
 using Grpc.Core;
 using MediatR;
-using Volkswagen.Dashboard.Repository;
+using Volkswagen.Dashboard.Services.Cars;
 using Volkswagen.Dashboard.Services.CQRS.Commands;
 using Volkswagen.Dashboard.Services.CQRS.Queries;
 
@@ -37,27 +37,20 @@ public class CarGrpcService : CarService.CarServiceBase
     public override async Task<InsertCarResponse> InsertCar(
         InsertCarRequest request, ServerCallContext context)
     {
-        var model = new CarModel
-        {
-            Name        = request.Name,
-            DateRelease = DateTime.Parse(request.DateRelease, null,
-                              System.Globalization.DateTimeStyles.RoundtripKind)
-        };
-        var id = await _mediator.Send(new InsertCarCommand(model), context.CancellationToken);
+        var dateRelease = DateTime.Parse(request.DateRelease, null,
+            System.Globalization.DateTimeStyles.RoundtripKind);
+        var id = await _mediator.Send(new InsertCarCommand(request.Name, dateRelease), context.CancellationToken);
         return new InsertCarResponse { Id = id };
     }
 
     public override async Task<UpdateCarResponse> UpdateCar(
         UpdateCarRequest request, ServerCallContext context)
     {
-        var model = new CarModel
-        {
-            Id          = request.Id,
-            Name        = request.Name,
-            DateRelease = DateTime.Parse(request.DateRelease, null,
-                              System.Globalization.DateTimeStyles.RoundtripKind)
-        };
-        var id = await _mediator.Send(new UpdateCarCommand(model), context.CancellationToken);
+        var dateRelease = DateTime.Parse(request.DateRelease, null,
+            System.Globalization.DateTimeStyles.RoundtripKind);
+        var id = await _mediator.Send(
+            new UpdateCarCommand(request.Id, request.Name, dateRelease),
+            context.CancellationToken);
         if (string.IsNullOrEmpty(id))
             throw new RpcException(new Status(StatusCode.NotFound, "Carro não encontrado"));
         return new UpdateCarResponse { Id = id };
@@ -70,8 +63,8 @@ public class CarGrpcService : CarService.CarServiceBase
         return new DeleteCarResponse { Success = true };
     }
 
-    // ── Mapeamento CarModel → proto ───────────────────────────────────────────
-    private static CarResponse ToProto(CarModel car) => new()
+    // ── Mapeamento CarDto → proto ─────────────────────────────────────────────
+    private static CarResponse ToProto(CarDto car) => new()
     {
         Id          = car.Id,
         Name        = car.Name,

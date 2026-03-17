@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Volkswagen.Dashboard.Domain\Volkswagen.Dashboard.Domain.csproj" />
     <ProjectReference Include="..\Volkswagen.Dashboard.Repository\Volkswagen.Dashboard.Repository.csproj" />
     <ProjectReference Include="..\Volkswagen.Dashboard.Services\Volkswagen.Dashboard.Services.csproj" />
     <ProjectReference Include="..\Volkswagen.Dashboard.WebApi\Volkswagen.Dashboard.WebApi.csproj" />

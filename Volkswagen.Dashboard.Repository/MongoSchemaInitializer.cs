@@ -63,7 +63,7 @@ namespace Volkswagen.Dashboard.Repository
 
         private async Task SeedAsync(CancellationToken cancellationToken)
         {
-            var cars = _database.GetCollection<CarModel>("cars");
+            var cars = _database.GetCollection<CarDocument>("cars");
             var users = _database.GetCollection<UserDocument>("users");
             var whitelist = _database.GetCollection<EmailWhitelistDocument>("email_whitelist");
 
@@ -89,10 +89,10 @@ namespace Volkswagen.Dashboard.Repository
                 }
             }
 
-            var hasCars = await cars.Find(FilterDefinition<CarModel>.Empty).AnyAsync(cancellationToken);
+            var hasCars = await cars.Find(FilterDefinition<CarDocument>.Empty).AnyAsync(cancellationToken);
             if (!hasCars)
             {
-                var seedCars = new List<CarModel>
+                var seedCars = new List<CarDocument>
                 {
                     new() { Name = "Gol", DateRelease = new DateTime(1980, 5, 15, 0, 0, 0, DateTimeKind.Utc) },
                     new() { Name = "Polo", DateRelease = new DateTime(2002, 3, 10, 0, 0, 0, DateTimeKind.Utc) },

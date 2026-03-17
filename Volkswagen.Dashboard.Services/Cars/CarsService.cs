@@ -1,35 +1,39 @@
-using Volkswagen.Dashboard.Repository;
+using Volkswagen.Dashboard.Domain.Cars;
+using Volkswagen.Dashboard.Domain.Repositories;
 
-namespace Volkswagen.Dashboard.Services.Cars
+namespace Volkswagen.Dashboard.Services.Cars;
+
+public class CarsService : ICarsService
 {
-    public class CarsService : ICarsService
+    private readonly ICarRepository _carRepository;
+
+    public CarsService(ICarRepository carRepository)
     {
-        private readonly ICarsRepository _carsRepository;
-
-        public CarsService(ICarsRepository carsRepository)
-        {
-            _carsRepository = carsRepository;
-        }
-
-        public string CreateCar(CarModel carModel)
-        {
-            return carModel.Id;
-        }
-
-        public async Task<CarModel?> GetCarById(string id) => await _carsRepository.GetCarById(id);
-
-        public async Task<IEnumerable<CarModel>> GetCars() => await _carsRepository.GetCars();
-
-        public async Task<string> InsertCar(CarModel carModel)
-        {
-            if (!string.IsNullOrWhiteSpace(carModel.Id))
-            {
-                return await _carsRepository.UpdateCar(carModel);
-            }
-
-            return await _carsRepository.InsertCar(carModel);
-        }
-
-        public async Task DeleteCar(string id) => await _carsRepository.DeleteCar(id);
+        _carRepository = carRepository;
     }
+
+    public async Task<CarDto?> GetCarByIdAsync(string id)
+    {
+        var car = await _carRepository.GetByIdAsync(id);
+        return car is null ? null : CarDto.FromDomain(car);
+    }
+
+    public async Task<IReadOnlyCollection<CarDto>> GetCarsAsync()
+    {
+        var cars = await _carRepository.GetAllAsync();
+        return cars.Select(CarDto.FromDomain).ToArray();
+    }
+
+    public Task<string> CreateCarAsync(CreateCarInput input)
+        => _carRepository.AddAsync(Car.Create(input.Name, input.DateRelease));
+
+    public async Task<string> UpdateCarAsync(UpdateCarInput input)
+    {
+        var car = Car.Restore(input.Id, input.Name, input.DateRelease);
+        var updated = await _carRepository.UpdateAsync(car);
+        return updated ? car.Id : string.Empty;
+    }
+
+    public Task DeleteCarAsync(string id)
+        => _carRepository.DeleteAsync(id);
 }

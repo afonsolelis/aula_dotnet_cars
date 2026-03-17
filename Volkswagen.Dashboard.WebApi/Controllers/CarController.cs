@@ -1,9 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Volkswagen.Dashboard.Repository;
 using Volkswagen.Dashboard.Services.CQRS.Commands;
 using Volkswagen.Dashboard.Services.CQRS.Queries;
+using Volkswagen.Dashboard.WebApi.Contracts;
 using Volkswagen.Dashboard.WebApi.Validators;
 
 namespace Volkswagen.Dashboard.WebApi.Controllers
@@ -41,9 +41,9 @@ namespace Volkswagen.Dashboard.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCar([FromBody] CarModel carModel)
+        public async Task<IActionResult> CreateCar([FromBody] SaveCarRequest request)
         {
-            var id = await _mediator.Send(new InsertCarCommand(carModel));
+            var id = await _mediator.Send(new InsertCarCommand(request.Name, request.DateRelease));
             return CreatedAtAction(nameof(GetCar), new { id }, new { id });
         }
 
@@ -55,10 +55,9 @@ namespace Volkswagen.Dashboard.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCar([FromBody] CarModel carModel, [FromRoute] string id)
+        public async Task<IActionResult> UpdateCar([FromBody] SaveCarRequest request, [FromRoute] string id)
         {
-            carModel.Id = id;
-            var result = await _mediator.Send(new UpdateCarCommand(carModel));
+            var result = await _mediator.Send(new UpdateCarCommand(id, request.Name, request.DateRelease));
             if (string.IsNullOrWhiteSpace(result))
             {
                 return NotFound("Carro não encontrado!");

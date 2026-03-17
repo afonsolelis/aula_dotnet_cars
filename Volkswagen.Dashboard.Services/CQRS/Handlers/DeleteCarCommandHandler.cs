@@ -14,5 +14,5 @@ public class DeleteCarCommandHandler : IRequestHandler<DeleteCarCommand>
     }
 
     public Task Handle(DeleteCarCommand request, CancellationToken cancellationToken)
-        => _carsService.DeleteCar(request.Id);
+        => _carsService.DeleteCarAsync(request.Id);
 }

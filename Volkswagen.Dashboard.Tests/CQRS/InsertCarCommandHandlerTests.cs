@@ -1,5 +1,4 @@
 using Moq;
-using Volkswagen.Dashboard.Repository;
 using Volkswagen.Dashboard.Services.Cars;
 using Volkswagen.Dashboard.Services.CQRS.Commands;
 using Volkswagen.Dashboard.Services.CQRS.Handlers;
@@ -24,16 +23,19 @@ public class InsertCarCommandHandlerTests
     {
         // Arrange
         const string expectedId = "65f0d5934f4f35f8d2cd2001";
-        _serviceMock.Setup(s => s.InsertCar(It.IsAny<CarModel>())).ReturnsAsync(expectedId);
-
-        var model = new CarModel { Name = "Passat", DateRelease = DateTime.UtcNow };
+        _serviceMock
+            .Setup(s => s.CreateCarAsync(It.IsAny<CreateCarInput>()))
+            .ReturnsAsync(expectedId);
 
         // Act
-        var result = await _handler.Handle(new InsertCarCommand(model), CancellationToken.None);
+        var result = await _handler.Handle(
+            new InsertCarCommand("Passat", DateTime.UtcNow),
+            CancellationToken.None);
 
         // Assert
         Assert.That(result, Is.EqualTo(expectedId));
-        // Handler deve limpar o Id para forçar insert (não update)
-        _serviceMock.Verify(s => s.InsertCar(It.Is<CarModel>(c => c.Id == string.Empty)), Times.Once);
+        _serviceMock.Verify(
+            s => s.CreateCarAsync(It.Is<CreateCarInput>(c => c.Name == "Passat")),
+            Times.Once);
     }
 }

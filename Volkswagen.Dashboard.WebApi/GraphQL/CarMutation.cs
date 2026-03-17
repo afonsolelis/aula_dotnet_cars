@@ -1,5 +1,4 @@
 using MediatR;
-using Volkswagen.Dashboard.Repository;
 using Volkswagen.Dashboard.Services.CQRS.Commands;
 
 namespace Volkswagen.Dashboard.WebApi.GraphQL;
@@ -10,20 +9,14 @@ public class CarMutation
         string name,
         DateTime dateRelease,
         [Service] IMediator mediator)
-    {
-        var model = new CarModel { Name = name, DateRelease = dateRelease };
-        return await mediator.Send(new InsertCarCommand(model));
-    }
+        => await mediator.Send(new InsertCarCommand(name, dateRelease));
 
     public async Task<string> UpdateCar(
         string id,
         string name,
         DateTime dateRelease,
         [Service] IMediator mediator)
-    {
-        var model = new CarModel { Id = id, Name = name, DateRelease = dateRelease };
-        return await mediator.Send(new UpdateCarCommand(model));
-    }
+        => await mediator.Send(new UpdateCarCommand(id, name, dateRelease));
 
     public async Task<bool> DeleteCar(
         string id,

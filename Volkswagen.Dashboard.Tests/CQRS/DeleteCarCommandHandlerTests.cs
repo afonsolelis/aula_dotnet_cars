@@ -23,12 +23,12 @@ public class DeleteCarCommandHandlerTests
     {
         // Arrange
         const string id = "65f0d5934f4f35f8d2cd1001";
-        _serviceMock.Setup(s => s.DeleteCar(id)).Returns(Task.CompletedTask);
+        _serviceMock.Setup(s => s.DeleteCarAsync(id)).Returns(Task.CompletedTask);
 
         // Act
         await _handler.Handle(new DeleteCarCommand(id), CancellationToken.None);
 
         // Assert
-        _serviceMock.Verify(s => s.DeleteCar(id), Times.Once);
+        _serviceMock.Verify(s => s.DeleteCarAsync(id), Times.Once);
     }
 }

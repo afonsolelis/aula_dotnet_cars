@@ -1,9 +1,9 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Volkswagen.Dashboard.Repository
+namespace Volkswagen.Dashboard.Repository.Documents
 {
-    public class CarModel
+    public class CarDocument
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

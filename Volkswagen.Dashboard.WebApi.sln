@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Volkswagen.Dashboard.Tests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Volkswagen.Dashboard.Web", "Volkswagen.Dashboard.Web\Volkswagen.Dashboard.Web.csproj", "{783AA3EB-FA72-405A-A5F2-5D353BC91077}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Volkswagen.Dashboard.Domain", "Volkswagen.Dashboard.Domain\Volkswagen.Dashboard.Domain.csproj", "{3EDF127B-9422-4D28-BB2F-7DA124C01213}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,18 @@ Global
 		{783AA3EB-FA72-405A-A5F2-5D353BC91077}.Release|x64.Build.0 = Release|Any CPU
 		{783AA3EB-FA72-405A-A5F2-5D353BC91077}.Release|x86.ActiveCfg = Release|Any CPU
 		{783AA3EB-FA72-405A-A5F2-5D353BC91077}.Release|x86.Build.0 = Release|Any CPU
+		{3EDF127B-9422-4D28-BB2F-7DA124C01213}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EDF127B-9422-4D28-BB2F-7DA124C01213}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EDF127B-9422-4D28-BB2F-7DA124C01213}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3EDF127B-9422-4D28-BB2F-7DA124C01213}.Debug|x64.Build.0 = Debug|Any CPU
+		{3EDF127B-9422-4D28-BB2F-7DA124C01213}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3EDF127B-9422-4D28-BB2F-7DA124C01213}.Debug|x86.Build.0 = Debug|Any CPU
+		{3EDF127B-9422-4D28-BB2F-7DA124C01213}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EDF127B-9422-4D28-BB2F-7DA124C01213}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EDF127B-9422-4D28-BB2F-7DA124C01213}.Release|x64.ActiveCfg = Release|Any CPU
+		{3EDF127B-9422-4D28-BB2F-7DA124C01213}.Release|x64.Build.0 = Release|Any CPU
+		{3EDF127B-9422-4D28-BB2F-7DA124C01213}.Release|x86.ActiveCfg = Release|Any CPU
+		{3EDF127B-9422-4D28-BB2F-7DA124C01213}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

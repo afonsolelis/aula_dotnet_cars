@@ -14,8 +14,5 @@ public class InsertCarCommandHandler : IRequestHandler<InsertCarCommand, string>
     }
 
     public Task<string> Handle(InsertCarCommand request, CancellationToken cancellationToken)
-    {
-        request.CarModel.Id = string.Empty;
-        return _carsService.InsertCar(request.CarModel);
-    }
+        => _carsService.CreateCarAsync(new CreateCarInput(request.Name, request.DateRelease));
 }

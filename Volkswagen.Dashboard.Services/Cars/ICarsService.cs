@@ -1,13 +1,10 @@
-using Volkswagen.Dashboard.Repository;
+namespace Volkswagen.Dashboard.Services.Cars;
 
-namespace Volkswagen.Dashboard.Services.Cars
+public interface ICarsService
 {
-    public interface ICarsService
-    {
-        string CreateCar(CarModel carModel);
-        Task<CarModel?> GetCarById(string id);
-        Task<IEnumerable<CarModel>> GetCars();
-        Task<string> InsertCar(CarModel carModel);
-        Task DeleteCar(string id);
-    }
+    Task<CarDto?> GetCarByIdAsync(string id);
+    Task<IReadOnlyCollection<CarDto>> GetCarsAsync();
+    Task<string> CreateCarAsync(CreateCarInput input);
+    Task<string> UpdateCarAsync(UpdateCarInput input);
+    Task DeleteCarAsync(string id);
 }

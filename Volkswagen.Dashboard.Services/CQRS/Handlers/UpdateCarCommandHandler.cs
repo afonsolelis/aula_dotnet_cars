@@ -14,5 +14,5 @@ public class UpdateCarCommandHandler : IRequestHandler<UpdateCarCommand, string>
     }
 
     public Task<string> Handle(UpdateCarCommand request, CancellationToken cancellationToken)
-        => _carsService.InsertCar(request.CarModel);
+        => _carsService.UpdateCarAsync(new UpdateCarInput(request.Id, request.Name, request.DateRelease));
 }

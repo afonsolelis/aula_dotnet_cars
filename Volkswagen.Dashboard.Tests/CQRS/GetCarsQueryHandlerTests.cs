@@ -1,5 +1,4 @@
 using Moq;
-using Volkswagen.Dashboard.Repository;
 using Volkswagen.Dashboard.Services.Cars;
 using Volkswagen.Dashboard.Services.CQRS.Handlers;
 using Volkswagen.Dashboard.Services.CQRS.Queries;
@@ -23,12 +22,12 @@ public class GetCarsQueryHandlerTests
     public async Task Handle_ShouldReturnAllCars()
     {
         // Arrange
-        var expectedCars = new List<CarModel>
+        var expectedCars = new List<CarDto>
         {
-            new() { Id = "65f0d5934f4f35f8d2cd1001", Name = "Fox",  DateRelease = new DateTime(2022, 1, 1) },
-            new() { Id = "65f0d5934f4f35f8d2cd1002", Name = "Polo", DateRelease = new DateTime(2023, 1, 1) }
+            new("65f0d5934f4f35f8d2cd1001", "Fox", new DateTime(2022, 1, 1)),
+            new("65f0d5934f4f35f8d2cd1002", "Polo", new DateTime(2023, 1, 1))
         };
-        _serviceMock.Setup(s => s.GetCars()).ReturnsAsync(expectedCars);
+        _serviceMock.Setup(s => s.GetCarsAsync()).ReturnsAsync(expectedCars);
 
         // Act
         var result = (await _handler.Handle(new GetCarsQuery(), CancellationToken.None)).ToList();
@@ -36,6 +35,6 @@ public class GetCarsQueryHandlerTests
         // Assert
         Assert.That(result, Has.Count.EqualTo(2));
         Assert.That(result[0].Name, Is.EqualTo("Fox"));
-        _serviceMock.Verify(s => s.GetCars(), Times.Once);
+        _serviceMock.Verify(s => s.GetCarsAsync(), Times.Once);
     }
 }

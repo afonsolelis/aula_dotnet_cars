@@ -1,72 +1,81 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Volkswagen.Dashboard.Domain.Cars;
+using Volkswagen.Dashboard.Domain.Repositories;
+using Volkswagen.Dashboard.Repository.Documents;
 
-namespace Volkswagen.Dashboard.Repository
+namespace Volkswagen.Dashboard.Repository;
+
+public class CarsRepository : ICarRepository
 {
-    public class CarsRepository : ICarsRepository
+    private readonly IMongoCollection<CarDocument> _cars;
+
+    public CarsRepository(IMongoDatabase database)
     {
-        private readonly IMongoCollection<CarModel> _cars;
-
-        public CarsRepository(IMongoDatabase database)
-        {
-            _cars = database.GetCollection<CarModel>("cars");
-        }
-
-        public async Task<IEnumerable<CarModel>> GetCars()
-        {
-            return await _cars.Find(FilterDefinition<CarModel>.Empty)
-                .SortBy(x => x.Name)
-                .ToListAsync();
-        }
-
-        public async Task<CarModel?> GetCarById(string id)
-        {
-            if (!ObjectId.TryParse(id, out _))
-            {
-                return null;
-            }
-
-            return await _cars.Find(x => x.Id == id).FirstOrDefaultAsync();
-        }
-
-        public async Task<string> InsertCar(CarModel carModel)
-        {
-            var document = new CarModel
-            {
-                Name = carModel.Name,
-                DateRelease = DateTime.SpecifyKind(carModel.DateRelease, DateTimeKind.Utc)
-            };
-
-            await _cars.InsertOneAsync(document);
-            return document.Id;
-        }
-
-        public async Task DeleteCar(string id)
-        {
-            if (!ObjectId.TryParse(id, out _))
-            {
-                return;
-            }
-
-            await _cars.DeleteOneAsync(x => x.Id == id);
-        }
-
-        public async Task<string> UpdateCar(CarModel carModel)
-        {
-            if (!ObjectId.TryParse(carModel.Id, out _))
-            {
-                return string.Empty;
-            }
-
-            var updated = new CarModel
-            {
-                Id = carModel.Id,
-                Name = carModel.Name,
-                DateRelease = DateTime.SpecifyKind(carModel.DateRelease, DateTimeKind.Utc)
-            };
-
-            var result = await _cars.ReplaceOneAsync(x => x.Id == carModel.Id, updated);
-            return result.MatchedCount > 0 ? carModel.Id : string.Empty;
-        }
+        _cars = database.GetCollection<CarDocument>("cars");
     }
+
+    public async Task<IReadOnlyCollection<Car>> GetAllAsync()
+    {
+        var documents = await _cars.Find(FilterDefinition<CarDocument>.Empty)
+            .SortBy(x => x.Name)
+            .ToListAsync();
+
+        return documents.Select(ToDomain).ToArray();
+    }
+
+    public async Task<Car?> GetByIdAsync(string id)
+    {
+        if (!ObjectId.TryParse(id, out _))
+        {
+            return null;
+        }
+
+        var document = await _cars.Find(x => x.Id == id).FirstOrDefaultAsync();
+        return document is null ? null : ToDomain(document);
+    }
+
+    public async Task<string> AddAsync(Car car)
+    {
+        var document = new CarDocument
+        {
+            Name = car.Name,
+            DateRelease = car.DateRelease
+        };
+
+        await _cars.InsertOneAsync(document);
+        return document.Id;
+    }
+
+    public async Task<bool> UpdateAsync(Car car)
+    {
+        if (!ObjectId.TryParse(car.Id, out _))
+        {
+            return false;
+        }
+
+        var result = await _cars.ReplaceOneAsync(x => x.Id == car.Id, ToDocument(car));
+        return result.MatchedCount > 0;
+    }
+
+    public async Task DeleteAsync(string id)
+    {
+        if (!ObjectId.TryParse(id, out _))
+        {
+            return;
+        }
+
+        await _cars.DeleteOneAsync(x => x.Id == id);
+    }
+
+    private static Car ToDomain(CarDocument document)
+        => Car.Restore(document.Id, document.Name, document.DateRelease);
+
+    private static CarDocument ToDocument(Car car)
+        => new()
+        {
+            Id = car.Id,
+            Name = car.Name,
+            DateRelease = car.DateRelease
+        };
 }

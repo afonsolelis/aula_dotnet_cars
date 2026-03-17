@@ -6,10 +6,12 @@ using MongoDB.Driver;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Volkswagen.Dashboard.Domain.Repositories;
 using Volkswagen.Dashboard.Repository;
 using Volkswagen.Dashboard.Services.Auth;
 using Volkswagen.Dashboard.Services.Cars;
 using Volkswagen.Dashboard.Services.CQRS.Handlers;
+using Volkswagen.Dashboard.Services.Security;
 using Volkswagen.Dashboard.WebApi.GraphQL;
 using Volkswagen.Dashboard.WebApi.Grpc;
 
@@ -35,10 +37,13 @@ builder.Services.AddSingleton(sp =>
 });
 
 // ── Serviços de domínio ───────────────────────────────────────────────────────
-builder.Services.AddScoped<ICarsRepository, CarsRepository>();
+builder.Services.AddScoped<ICarRepository, CarsRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthorizedEmailRepository, UserRepository>();
 builder.Services.AddScoped<ICarsService, CarsService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddSingleton<ITokenService>(_ => new JwtTokenService("d8cf9a98-bfb2-4e0a-85b3-7c94f8e908ad"));
+builder.Services.AddSingleton<IPasswordHasher, Md5PasswordHasher>();
 builder.Services.AddSingleton<IMongoSchemaInitializer, MongoSchemaInitializer>();
 
 // ── MediatR (CQRS) ────────────────────────────────────────────────────────────

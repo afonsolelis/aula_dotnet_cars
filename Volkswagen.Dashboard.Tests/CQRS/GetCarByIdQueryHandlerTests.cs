@@ -1,5 +1,4 @@
 using Moq;
-using Volkswagen.Dashboard.Repository;
 using Volkswagen.Dashboard.Services.Cars;
 using Volkswagen.Dashboard.Services.CQRS.Handlers;
 using Volkswagen.Dashboard.Services.CQRS.Queries;
@@ -24,8 +23,8 @@ public class GetCarByIdQueryHandlerTests
     {
         // Arrange
         const string id = "65f0d5934f4f35f8d2cd1001";
-        var expected = new CarModel { Id = id, Name = "Gol", DateRelease = DateTime.UtcNow };
-        _serviceMock.Setup(s => s.GetCarById(id)).ReturnsAsync(expected);
+        var expected = new CarDto(id, "Gol", DateTime.UtcNow);
+        _serviceMock.Setup(s => s.GetCarByIdAsync(id)).ReturnsAsync(expected);
 
         // Act
         var result = await _handler.Handle(new GetCarByIdQuery(id), CancellationToken.None);
@@ -40,7 +39,7 @@ public class GetCarByIdQueryHandlerTests
     public async Task Handle_WhenCarDoesNotExist_ShouldReturnNull()
     {
         // Arrange
-        _serviceMock.Setup(s => s.GetCarById(It.IsAny<string>())).ReturnsAsync((CarModel?)null);
+        _serviceMock.Setup(s => s.GetCarByIdAsync(It.IsAny<string>())).ReturnsAsync((CarDto?)null);
 
         // Act
         var result = await _handler.Handle(
