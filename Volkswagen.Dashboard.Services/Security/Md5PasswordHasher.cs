@@ -18,4 +18,7 @@ public sealed class Md5PasswordHasher : IPasswordHasher
 
         return builder.ToString();
     }
+
+    public bool Verify(string input, string hash)
+        => string.Equals(Hash(input), hash, StringComparison.Ordinal);
 }

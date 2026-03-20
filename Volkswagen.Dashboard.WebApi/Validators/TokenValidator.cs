@@ -3,9 +3,9 @@ using System.Security.Claims;
 
 namespace Volkswagen.Dashboard.WebApi.Validators
 {
-    public static class TokenValidator
+    public sealed class TokenValidator : ITokenInspector
     {
-        public static void GetPermissionFromToken(string token)
+        public void Inspect(string token)
         {
             var handler = new JwtSecurityTokenHandler();
 

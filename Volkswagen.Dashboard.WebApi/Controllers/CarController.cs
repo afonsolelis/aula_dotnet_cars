@@ -13,10 +13,12 @@ namespace Volkswagen.Dashboard.WebApi.Controllers
     public class CarController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ITokenInspector _tokenInspector;
 
-        public CarController(IMediator mediator)
+        public CarController(IMediator mediator, ITokenInspector tokenInspector)
         {
             _mediator = mediator;
+            _tokenInspector = tokenInspector;
         }
 
         [HttpGet]
@@ -24,7 +26,7 @@ namespace Volkswagen.Dashboard.WebApi.Controllers
         public async Task<IActionResult> GetCars()
         {
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            TokenValidator.GetPermissionFromToken(token);
+            _tokenInspector.Inspect(token);
             return Ok(await _mediator.Send(new GetCarsQuery()));
         }
 

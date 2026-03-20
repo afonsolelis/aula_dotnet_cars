@@ -14,6 +14,7 @@ using Volkswagen.Dashboard.Services.CQRS.Handlers;
 using Volkswagen.Dashboard.Services.Security;
 using Volkswagen.Dashboard.WebApi.GraphQL;
 using Volkswagen.Dashboard.WebApi.Grpc;
+using Volkswagen.Dashboard.WebApi.Validators;
 
 // gRPC requer HTTP/2; este switch permite HTTP/2 sem TLS em desenvolvimento
 AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -39,11 +40,16 @@ builder.Services.AddSingleton(sp =>
 // ── Serviços de domínio ───────────────────────────────────────────────────────
 builder.Services.AddScoped<ICarRepository, CarsRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthorizedEmailRepository, UserRepository>();
+builder.Services.AddScoped<IAuthorizedEmailRepository, AuthorizedEmailRepository>();
+builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<ICarsService, CarsService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthService>(sp => sp.GetRequiredService<AuthService>());
+builder.Services.AddScoped<ILoginService>(sp => sp.GetRequiredService<AuthService>());
+builder.Services.AddScoped<IRegistrationService>(sp => sp.GetRequiredService<AuthService>());
+builder.Services.AddScoped<ICarDtoMapper, CarDtoMapper>();
 builder.Services.AddSingleton<ITokenService>(_ => new JwtTokenService("d8cf9a98-bfb2-4e0a-85b3-7c94f8e908ad"));
 builder.Services.AddSingleton<IPasswordHasher, Md5PasswordHasher>();
+builder.Services.AddSingleton<ITokenInspector, TokenValidator>();
 builder.Services.AddSingleton<IMongoSchemaInitializer, MongoSchemaInitializer>();
 
 // ── MediatR (CQRS) ────────────────────────────────────────────────────────────

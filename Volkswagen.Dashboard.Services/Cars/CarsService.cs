@@ -6,22 +6,24 @@ namespace Volkswagen.Dashboard.Services.Cars;
 public class CarsService : ICarsService
 {
     private readonly ICarRepository _carRepository;
+    private readonly ICarDtoMapper _carDtoMapper;
 
-    public CarsService(ICarRepository carRepository)
+    public CarsService(ICarRepository carRepository, ICarDtoMapper carDtoMapper)
     {
         _carRepository = carRepository;
+        _carDtoMapper = carDtoMapper;
     }
 
     public async Task<CarDto?> GetCarByIdAsync(string id)
     {
         var car = await _carRepository.GetByIdAsync(id);
-        return car is null ? null : CarDto.FromDomain(car);
+        return car is null ? null : _carDtoMapper.Map(car);
     }
 
     public async Task<IReadOnlyCollection<CarDto>> GetCarsAsync()
     {
         var cars = await _carRepository.GetAllAsync();
-        return cars.Select(CarDto.FromDomain).ToArray();
+        return cars.Select(_carDtoMapper.Map).ToArray();
     }
 
     public Task<string> CreateCarAsync(CreateCarInput input)

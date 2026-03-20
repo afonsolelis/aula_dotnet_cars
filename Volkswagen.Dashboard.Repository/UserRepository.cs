@@ -6,15 +6,13 @@ using Volkswagen.Dashboard.Repository.Documents;
 
 namespace Volkswagen.Dashboard.Repository;
 
-public class UserRepository : IUserRepository, IAuthorizedEmailRepository
+public sealed class UserRepository : IUserRepository
 {
     private readonly IMongoCollection<UserDocument> _users;
-    private readonly IMongoCollection<EmailWhitelistDocument> _whitelist;
 
     public UserRepository(IMongoDatabase database)
     {
         _users = database.GetCollection<UserDocument>("users");
-        _whitelist = database.GetCollection<EmailWhitelistDocument>("email_whitelist");
     }
 
     public async Task<bool> ExistsByEmailAsync(EmailAddress email)
@@ -31,34 +29,7 @@ public class UserRepository : IUserRepository, IAuthorizedEmailRepository
 
     public async Task AddAsync(User user)
     {
-        ObjectId? whitelistEntryId = string.IsNullOrWhiteSpace(user.WhitelistEntryId)
-            ? null
-            : ObjectId.Parse(user.WhitelistEntryId);
-
-        var document = new UserDocument
-        {
-            Profile = new UserProfile { Username = user.Username },
-            Credentials = new UserCredentials
-            {
-                Email = user.Email.Value,
-                PasswordHash = user.PasswordHash
-            },
-            WhitelistEntryId = whitelistEntryId,
-            CreatedAt = user.CreatedAt
-        };
-
-        await _users.InsertOneAsync(document);
-    }
-
-    public async Task<AuthorizedEmail?> GetAuthorizedEmailAsync(EmailAddress email)
-    {
-        var document = await _whitelist.Find(x => x.Email == email.Value).FirstOrDefaultAsync();
-        if (document is null)
-        {
-            return null;
-        }
-
-        return new AuthorizedEmail(document.Id.ToString(), new EmailAddress(document.Email), document.CreatedAt);
+        await _users.InsertOneAsync(ToDocument(user));
     }
 
     private static User ToDomain(UserDocument document)
@@ -70,5 +41,24 @@ public class UserRepository : IUserRepository, IAuthorizedEmailRepository
             document.Credentials.PasswordHash,
             document.CreatedAt,
             whitelistEntryId);
+    }
+
+    private static UserDocument ToDocument(User user)
+    {
+        ObjectId? whitelistEntryId = string.IsNullOrWhiteSpace(user.WhitelistEntryId)
+            ? null
+            : ObjectId.Parse(user.WhitelistEntryId);
+
+        return new UserDocument
+        {
+            Profile = new UserProfile { Username = user.Username },
+            Credentials = new UserCredentials
+            {
+                Email = user.Email.Value,
+                PasswordHash = user.PasswordHash
+            },
+            WhitelistEntryId = whitelistEntryId,
+            CreatedAt = user.CreatedAt
+        };
     }
 }

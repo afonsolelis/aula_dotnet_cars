@@ -5,7 +5,7 @@ using Volkswagen.Dashboard.Services.Security;
 
 namespace Volkswagen.Dashboard.Services.Auth;
 
-public class AuthService : IAuthService
+public class AuthService : IAuthService, ILoginService, IRegistrationService
 {
     private readonly IUserRepository _userRepository;
     private readonly IAuthorizedEmailRepository _authorizedEmailRepository;
@@ -36,8 +36,7 @@ public class AuthService : IAuthService
                 throw new DomainException("Usuário ou senha inválidos");
             }
 
-            var passwordHash = _passwordHasher.Hash(request.Password);
-            if (!string.Equals(passwordHash, user.PasswordHash, StringComparison.Ordinal))
+            if (!_passwordHasher.Verify(request.Password, user.PasswordHash))
             {
                 throw new DomainException("Usuário ou senha inválidos");
             }
